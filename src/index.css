@@ -319,6 +319,121 @@ body {
   animation: float 3s ease-in-out infinite 2s;
 }
 
+/* What We Offer Section - FULL SCREEN */
+.offer-section {
+  position: relative;
+  background: #fcfaff;
+  height: 100vh;
+  width: 100vw;
+  min-height: 600px;
+  max-width: 100vw;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  overflow: hidden;
+}
+
+.offer-title-top {
+  margin-top: 70px;
+  font-size: 1.2rem; /* smaller text */
+  font-weight: 800;
+  color: #6d28d9;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 2;
+  position: relative;
+  letter-spacing: 0.03em;
+  justify-content: center;
+}
+
+.offer-icon {
+  display: inline-flex;
+}
+
+.offer-circles {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -45%);
+  width: 1200px;
+  height: 900px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.circle1 {
+  width: 1000px;
+  height: 1000px;
+  background: rgba(124, 58, 237, 0.05);
+}
+
+.circle2 {
+  width: 700px;
+  height: 700px;
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.circle3 {
+  width: 400px;
+  height: 400px;
+  background: rgba(124, 58, 237, 0.12);
+}
+
+/* --- CURVED WHITE BOTTOM --- */
+.offer-section::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 600px;
+  background: white;
+  /* curved shape using clip-path polygon */
+  clip-path: polygon(0 85%, 50% 96%, 100% 85%, 100% 100%, 0 100%);
+  z-index: 2;
+}
+
+/* Responsive - adjust curve for smaller screens */
+@media (max-width: 900px) {
+  .offer-circles {
+    width: 600px;
+    height: 600px;
+  }
+  .circle1 { width: 500px; height: 500px; }
+  .circle2 { width: 350px; height: 350px; }
+  .circle3 { width: 200px; height: 200px; }
+  .offer-title-top { font-size: 1rem; margin-top: 18px;}
+  .offer-section::after {
+    height: 60px;
+    clip-path: polygon(0 90%, 50% 100%, 100% 90%, 100% 100%, 0 100%);
+  }
+}
+@media (max-width: 500px) {
+  .offer-circles {
+    width: 350px;
+    height: 350px;
+  }
+  .circle1 { width: 300px; height: 300px; }
+  .circle2 { width: 200px; height: 200px; }
+  .circle3 { width: 100px; height: 100px; }
+  .offer-title-top { font-size: 0.9rem; margin-top: 10px;}
+  .offer-section::after {
+    height: 36px;
+    clip-path: polygon(0 95%, 50% 100%, 100% 95%, 100% 100%, 0 100%);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .nav-menu {

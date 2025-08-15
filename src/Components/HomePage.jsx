@@ -1,21 +1,45 @@
 import React, { useState, useEffect } from 'react';
 
+function WhatWeOffer() {
+  return (
+    <section className="offer-section">
+      {/* TOP CENTERED TITLE */}
+      <div className="offer-title-top">
+        WHAT WE OFFER
+        <span className="offer-icon">
+          <svg width="32" height="21" viewBox="0 0 28 18" fill="none">
+            <ellipse cx="14" cy="9" rx="6" ry="6" fill="#D6B4FA" />
+            <ellipse cx="23" cy="9" rx="2" ry="1" fill="#EAD8FC" />
+            <ellipse cx="19" cy="2" rx="1.5" ry="1" fill="#EAD8FC" />
+            <ellipse cx="19" cy="16" rx="1.5" ry="1" fill="#EAD8FC" />
+            <ellipse cx="9" cy="2" rx="1.5" ry="1" fill="#EAD8FC" />
+            <ellipse cx="9" cy="16" rx="1.5" ry="1" fill="#EAD8FC" />
+            <ellipse cx="5" cy="9" rx="2" ry="1" fill="#EAD8FC" />
+          </svg>
+        </span>
+      </div>
+      <div className="offer-circles">
+        <div className="circle circle1"></div>
+        <div className="circle circle2"></div>
+        <div className="circle circle3"></div>
+      </div>
+    </section>
+  );
+}
+
 function App() {
   const [activeNavLink, setActiveNavLink] = useState('About');
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setHeaderVisible(false);
       } else {
         setHeaderVisible(true);
       }
-      
       setLastScrollY(currentScrollY);
     };
 
@@ -23,66 +47,57 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
-  // Progress bar animation on mount
   useEffect(() => {
     const animateProgressBars = () => {
-      const progressBars = document.querySelectorAll(".progress-fill");
+      const progressBars = document.querySelectorAll('.progress-fill');
       progressBars.forEach((bar, index) => {
         setTimeout(() => {
-          bar.style.width = "0%";
-          bar.style.transition = "width 2s ease";
+          bar.style.width = '0%';
+          bar.style.transition = 'width 2s ease';
           setTimeout(() => {
-            bar.style.width = "75%";
+            bar.style.width = '75%';
           }, 100);
         }, index * 200);
       });
     };
 
     setTimeout(animateProgressBars, 1000);
-    console.log("Pet Care Website loaded successfully! 🐾");
+    console.log('Pet Care Website loaded successfully! 🐾');
   }, []);
 
-  // Handle nav link clicks
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
   };
 
-  // Handle pet card interactions
   const handleCardMouseEnter = (e) => {
     const card = e.currentTarget;
-    card.style.transform = "translateY(-5px) scale(1.05)";
-    card.style.transition = "all 0.3s ease";
+    card.style.transform = 'translateY(-5px) scale(1.05)';
+    card.style.transition = 'all 0.3s ease';
   };
-
   const handleCardMouseLeave = (e) => {
     const card = e.currentTarget;
-    card.style.transform = "translateY(0) scale(1)";
+    card.style.transform = 'translateY(0) scale(1)';
   };
-
   const handleCardClick = (e) => {
     const card = e.currentTarget;
-    card.style.animation = "bounce 0.6s ease";
+    card.style.animation = 'bounce 0.6s ease';
     setTimeout(() => {
-      card.style.animation = "";
+      card.style.animation = '';
     }, 600);
   };
-
-  // Handle heart click
   const handleHeartClick = (e) => {
     const heart = e.currentTarget;
-    heart.style.animation = "heartBeat 0.8s ease";
+    heart.style.animation = 'heartBeat 0.8s ease';
     setTimeout(() => {
-      heart.style.animation = "float 3s ease-in-out infinite";
+      heart.style.animation = 'float 3s ease-in-out infinite';
     }, 800);
   };
-
-  // Handle paw logo click
   const handlePawClick = (e) => {
     const paw = e.currentTarget;
-    paw.style.animation = "wiggle 0.5s ease";
+    paw.style.animation = 'wiggle 0.5s ease';
     setTimeout(() => {
-      paw.style.animation = "";
+      paw.style.animation = '';
     }, 500);
   };
 
@@ -90,14 +105,12 @@ function App() {
 
   return (
     <div className="pet-care-app">
-      {/* Add CSS animations */}
       <style>{`
         @keyframes bounce {
           0%, 20%, 60%, 100% { transform: translateY(0) scale(1); }
           40% { transform: translateY(-10px) scale(1.1); }
           80% { transform: translateY(-5px) scale(1.05); }
         }
-        
         @keyframes heartBeat {
           0% { transform: scale(1); }
           14% { transform: scale(1.3); }
@@ -105,42 +118,31 @@ function App() {
           42% { transform: scale(1.3); }
           70% { transform: scale(1); }
         }
-        
         @keyframes wiggle {
-          0%, 7%, 14%, 21%, 28%, 35%, 42%, 49%, 56%, 63%, 70%, 77%, 84%, 91%, 98%, 100% {
-            transform: rotate(0deg);
-          }
-          3.5%, 10.5%, 17.5%, 24.5%, 31.5%, 38.5%, 45.5%, 52.5%, 59.5%, 66.5%, 73.5%, 80.5%, 87.5%, 94.5% {
-            transform: rotate(-3deg);
-          }
+          0%, 7%, 14%, 21%, 28%, 35%, 42%, 49%, 56%, 63%, 70%, 77%, 84%, 91%, 98%, 100% { transform: rotate(0deg);}
+          3.5%, 10.5%, 17.5%, 24.5%, 31.5%, 38.5%, 45.5%, 52.5%, 59.5%, 66.5%, 73.5%, 80.5%, 87.5%, 94.5% {transform: rotate(-3deg);}
         }
-        
-        .header {
-          transition: transform 0.3s ease;
-          transform: translateY(${headerVisible ? '0' : '-100%'});
-        }
+        .header { transition: transform 0.3s ease; transform: translateY(${headerVisible ? '0' : '-100%'});}
       `}</style>
-
       <header className="header">
         <div className="nav-container">
           <div className="logo">
             <div className="paw-logo" onClick={handlePawClick}>
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#7C3AED"/>
-                <ellipse cx="20" cy="16" rx="4" ry="6" fill="white"/>
-                <ellipse cx="13" cy="22" rx="3" ry="4" fill="white"/>
-                <ellipse cx="27" cy="22" rx="3" ry="4" fill="white"/>
-                <ellipse cx="16" cy="28" rx="2.5" ry="3" fill="white"/>
-                <ellipse cx="24" cy="28" rx="2.5" ry="3" fill="white"/>
+                <circle cx="20" cy="20" r="20" fill="#7C3AED" />
+                <ellipse cx="20" cy="16" rx="4" ry="6" fill="white" />
+                <ellipse cx="13" cy="22" rx="3" ry="4" fill="white" />
+                <ellipse cx="27" cy="22" rx="3" ry="4" fill="white" />
+                <ellipse cx="16" cy="28" rx="2.5" ry="3" fill="white" />
+                <ellipse cx="24" cy="28" rx="2.5" ry="3" fill="white" />
               </svg>
             </div>
           </div>
-          
           <nav className="nav-menu">
-            {navItems.map(item => (
-              <a 
+            {navItems.map((item) => (
+              <a
                 key={item}
-                href="#" 
+                href="#"
                 className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
                 onClick={(e) => handleNavClick(item, e)}
               >
@@ -148,24 +150,22 @@ function App() {
               </a>
             ))}
           </nav>
-          
           <div className="nav-actions">
             <button className="notification-btn">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF"/>
-                <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF"/>
+                <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
+                <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
             <button className="cart-btn">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none"/>
+                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
             </button>
             <div className="auth-link">Register / Login</div>
           </div>
         </div>
       </header>
-
       <main className="main">
         <div className="hero-section">
           <div className="hero-content">
@@ -176,30 +176,26 @@ function App() {
               </h1>
               <p className="hero-subtitle">— ALL IN ONE TAIL-WAGGING PLACE.</p>
             </div>
-            
             <div className="hero-visual">
               <div className="background-circles">
                 <div className="purple-circle"></div>
                 <div className="dashed-circle"></div>
               </div>
-              
               <div className="main-pet-image">
-                <img 
-                  src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=350&fit=crop&crop=face" 
-                  alt="Adorable puppy" 
+                <img
+                  src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=350&fit=crop&crop=face"
+                  alt="Adorable puppy"
                   className="puppy-image"
                 />
               </div>
-              
               <div className="orange-cat">
-                <img 
-                  src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&h=150&fit=crop&crop=face" 
-                  alt="Orange cat" 
+                <img
+                  src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&h=150&fit=crop&crop=face"
+                  alt="Orange cat"
                   className="cat-image"
                 />
               </div>
-              
-              <div 
+              <div
                 className="pet-card tiny-card"
                 onMouseEnter={handleCardMouseEnter}
                 onMouseLeave={handleCardMouseLeave}
@@ -210,9 +206,9 @@ function App() {
                     <h3>Tiny</h3>
                     <div className="rating">1k+ ★</div>
                   </div>
-                  <img 
-                    src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=40&h=40&fit=crop&crop=face" 
-                    alt="Tiny" 
+                  <img
+                    src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=40&h=40&fit=crop&crop=face"
+                    alt="Tiny"
                     className="pet-avatar"
                   />
                 </div>
@@ -220,8 +216,7 @@ function App() {
                   <div className="progress-fill"></div>
                 </div>
               </div>
-              
-              <div 
+              <div
                 className="pet-card mark-card"
                 onMouseEnter={handleCardMouseEnter}
                 onMouseLeave={handleCardMouseLeave}
@@ -232,9 +227,9 @@ function App() {
                     <h3>Mark</h3>
                     <div className="rating">1k+ ★</div>
                   </div>
-                  <img 
-                    src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=40&h=40&fit=crop&crop=face" 
-                    alt="Mark" 
+                  <img
+                    src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=40&h=40&fit=crop&crop=face"
+                    alt="Mark"
                     className="pet-avatar"
                   />
                 </div>
@@ -242,16 +237,17 @@ function App() {
                   <div className="progress-fill"></div>
                 </div>
               </div>
-              
               <div className="floating-heart" onClick={handleHeartClick}>
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-                  <circle cx="15" cy="15" r="15" fill="#EF4444"/>
-                  <path d="M15 21.5C15 21.5 8.5 17.5 8.5 13.5C8.5 11.5 10 10 12 10C13.5 10 15 11 15 11S16.5 10 18 10C20 10 21.5 11.5 21.5 13.5C21.5 17.5 15 21.5 15 21.5Z" fill="white"/>
+                  <circle cx="15" cy="15" r="15" fill="#EF4444" />
+                  <path d="M15 21.5C15 21.5 8.5 17.5 8.5 13.5C8.5 11.5 10 10 12 10C13.5 10 15 11 15 11S16.5 10 18 10C20 10 21.5 11.5 21.5 13.5C21.5 17.5 15 21.5 15 21.5Z" fill="white" />
                 </svg>
               </div>
             </div>
           </div>
         </div>
+        {/* What We Offer Section */}
+        <WhatWeOffer />
       </main>
     </div>
   );

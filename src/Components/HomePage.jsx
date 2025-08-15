@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import petsImage from '../Assets/pets.png'; // Make sure pets.png is in src/assets/
 
 function WhatWeOffer() {
   return (
@@ -22,6 +23,10 @@ function WhatWeOffer() {
         <div className="circle circle1"></div>
         <div className="circle circle2"></div>
         <div className="circle circle3"></div>
+      </div>
+      {/* Centered pets image below the circles */}
+      <div className="offer-pets-image">
+        <img src={petsImage} alt="pets" className="pets-image" />
       </div>
     </section>
   );

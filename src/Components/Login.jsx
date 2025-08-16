@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FooterLogoImg from "../Assets/logo.png";
-import FirstDog from "../Assets/FirstDog.png"; // ⬅️ use this image
+import FirstDog from "../Assets/FirstDog.png";
+import avatar1 from "../Assets/avatar1.png";
+import avatar2 from "../Assets/avatar2.png";
+import avatar3 from "../Assets/avatar3.png";
 
 export default function Login() {
   const [activeNavLink, setActiveNavLink] = useState("");
@@ -83,7 +86,7 @@ export default function Login() {
         </div>
       </header>
 
-      {/* BODY: two columns (flex) with extra gap and centered dog */}
+      {/* BODY */}
       <main className="login-root">
         <div className="login-container">
           {/* LEFT: form card */}
@@ -107,7 +110,7 @@ export default function Login() {
                 className="login-input"
                 type="text"
                 name="fullname"
-                placeholder="Jamila Mohammad"
+                placeholder="Nguyen Thien Phu"
                 value={form.fullname}
                 onChange={onChange}
               />
@@ -158,12 +161,44 @@ export default function Login() {
             </form>
           </section>
 
-          {/* RIGHT: teal box centered with dog in the center */}
+          {/* RIGHT: teal box + dog + community card */}
           <aside className="login-visual center-dog">
             <h2 className="login-right-title">
               HEALTHY PETS BRING JOY<br />AND ENRICH YOUR LIFE.
             </h2>
             <img src={FirstDog} alt="Puppy" className="login-dog" />
+
+            <div className="login-community-card">
+              <div className="community-content">
+                <div className="community-text">
+                  <div className="community-title">
+                    Join Our Online Pet Care & Protection Community
+                  </div>
+                  <p className="community-desc">
+                    Join our online animal protection community today and share your knowledge and
+                    experience to help care for and protect pets everywhere!
+                  </p>
+
+                  <div className="community-badge-row">
+                    <div className="community-avatars">
+                      <img className="community-avatar" src={avatar1} alt="member 1" />
+                      <img className="community-avatar" src={avatar2} alt="member 2" />
+                      <img className="community-avatar" src={avatar3} alt="member 3" />
+                    </div>
+                    <div className="community-badge-text">
+                      <div className="community-badge-title">
+                        JOIN WITH 100K+<br/>PEOPLES ON THE WORLD !
+                      </div>
+                      <div className="community-badge-caption">
+                        Let meet some new friend on community
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" className="community-cta">Join Now</button>
+              </div>
+            </div>
           </aside>
         </div>
       </main>

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import petsImage from '../Assets/pets.png';
 import FirstDog from '../Assets/FirstDog.png';
 import OrangeCat from '../Assets/OrangeCat.png';
 import FooterLogoImg from '../Assets/logo.png';
 import LastDog from '../Assets/LastDog.png';
 import Last from '../Assets/Last.png';
+import ServicePage from './ServicePage.jsx'; // Make sure this exists!
 
 function WhatWeOffer() {
   return (
     <section className="offer-section">
-      {/* T */}
       <div className="offer-title-top">
         WHAT WE OFFER
         <span className="offer-icon">
@@ -29,7 +30,6 @@ function WhatWeOffer() {
         <div className="circle circle2"></div>
         <div className="circle circle3"></div>
       </div>
-      {/* Ce */}
       <div className="offer-pets-image">
         <img src={petsImage} alt="pets" className="pets-image" />
       </div>
@@ -133,7 +133,6 @@ function ContactSection() {
           <div className="contact-footer-center">
             <div className="footer-polaroid">
               <div className="footer-polaroid-frame">
-                {/* U */}
                 <img
                   src={Last}
                   alt="Dog"
@@ -167,6 +166,7 @@ function App() {
   const [activeNavLink, setActiveNavLink] = useState('About');
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -204,6 +204,13 @@ function App() {
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
+    if (linkName === 'Service') {
+      navigate('/service');
+    }
+    if (linkName === 'About') {
+      navigate('/');
+    }
+    // Add navigation for other links as needed
   };
 
   const handleCardMouseEnter = (e) => {
@@ -295,92 +302,97 @@ function App() {
           </div>
         </div>
       </header>
-      <main className="main">
-        <div className="hero-section">
-          <div className="hero-content">
-            <div className="hero-text">
-              <p className="welcome-text">Welcome to the paw-some world of pet care!</p>
-              <h1 className="hero-title">
-                SHOP TREATS, GET TIPS, FIND FURRY FRIENDS, AND CONNECT WITH RESCUE TEAMS
-              </h1>
-              <p className="hero-subtitle">— ALL IN ONE TAIL-WAGGING PLACE.</p>
-            </div>
-            <div className="hero-visual">
-              <div className="background-circles">
-                <div className="purple-circle"></div>
-                <div className="dashed-circle"></div>
-              </div>
-              <div className="main-pet-image">
-                <img
-                  src={FirstDog}
-                  alt="Adorable puppy"
-                  className="puppy-image"
-                />
-              </div>
-              <div className="orange-cat">
-                <img
-                  src={OrangeCat}
-                  alt="Orange cat"
-                  className="cat-image"
-                />
-              </div>
-              <div
-                className="pet-card tiny-card"
-                onMouseEnter={handleCardMouseEnter}
-                onMouseLeave={handleCardMouseLeave}
-                onClick={handleCardClick}
-              >
-                <div className="pet-card-content">
-                  <div className="pet-info">
-                    <h3>Tiny</h3>
-                    <div className="rating">1k+ ★</div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main className="main">
+              <div className="hero-section">
+                <div className="hero-content">
+                  <div className="hero-text">
+                    <p className="welcome-text">Welcome to the paw-some world of pet care!</p>
+                    <h1 className="hero-title">
+                      SHOP TREATS, GET TIPS, FIND FURRY FRIENDS, AND CONNECT WITH RESCUE TEAMS
+                    </h1>
+                    <p className="hero-subtitle">— ALL IN ONE TAIL-WAGGING PLACE.</p>
                   </div>
-                  <img
-                    src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=40&h=40&fit=crop&crop=face"
-                    alt="Tiny"
-                    className="pet-avatar"
-                  />
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill"></div>
-                </div>
-              </div>
-              <div
-                className="pet-card mark-card"
-                onMouseEnter={handleCardMouseEnter}
-                onMouseLeave={handleCardMouseLeave}
-                onClick={handleCardClick}
-              >
-                <div className="pet-card-content">
-                  <div className="pet-info">
-                    <h3>Mark</h3>
-                    <div className="rating">1k+ ★</div>
+                  <div className="hero-visual">
+                    <div className="background-circles">
+                      <div className="purple-circle"></div>
+                      <div className="dashed-circle"></div>
+                    </div>
+                    <div className="main-pet-image">
+                      <img
+                        src={FirstDog}
+                        alt="Adorable puppy"
+                        className="puppy-image"
+                      />
+                    </div>
+                    <div className="orange-cat">
+                      <img
+                        src={OrangeCat}
+                        alt="Orange cat"
+                        className="cat-image"
+                      />
+                    </div>
+                    <div
+                      className="pet-card tiny-card"
+                      onMouseEnter={handleCardMouseEnter}
+                      onMouseLeave={handleCardMouseLeave}
+                      onClick={handleCardClick}
+                    >
+                      <div className="pet-card-content">
+                        <div className="pet-info">
+                          <h3>Tiny</h3>
+                          <div className="rating">1k+ ★</div>
+                        </div>
+                        <img
+                          src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=40&h=40&fit=crop&crop=face"
+                          alt="Tiny"
+                          className="pet-avatar"
+                        />
+                      </div>
+                      <div className="progress-bar">
+                        <div className="progress-fill"></div>
+                      </div>
+                    </div>
+                    <div
+                      className="pet-card mark-card"
+                      onMouseEnter={handleCardMouseEnter}
+                      onMouseLeave={handleCardMouseLeave}
+                      onClick={handleCardClick}
+                    >
+                      <div className="pet-card-content">
+                        <div className="pet-info">
+                          <h3>Mark</h3>
+                          <div className="rating">1k+ ★</div>
+                        </div>
+                        <img
+                          src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=40&h=40&fit=crop&crop=face"
+                          alt="Mark"
+                          className="pet-avatar"
+                        />
+                      </div>
+                      <div className="progress-bar">
+                        <div className="progress-fill"></div>
+                      </div>
+                    </div>
+                    <div className="floating-heart" onClick={handleHeartClick}>
+                      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                        <circle cx="15" cy="15" r="15" fill="#EF4444" />
+                        <path d="M15 21.5C15 21.5 8.5 17.5 8.5 13.5C8.5 11.5 10 10 12 10C13.5 10 15 11 15 11S16.5 10 18 10C20 10 21.5 11.5 21.5 13.5C21.5 17.5 15 21.5 15 21.5Z" fill="white" />
+                      </svg>
+                    </div>
                   </div>
-                  <img
-                    src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=40&h=40&fit=crop&crop=face"
-                    alt="Mark"
-                    className="pet-avatar"
-                  />
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill"></div>
                 </div>
               </div>
-              <div className="floating-heart" onClick={handleHeartClick}>
-                <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-                  <circle cx="15" cy="15" r="15" fill="#EF4444" />
-                  <path d="M15 21.5C15 21.5 8.5 17.5 8.5 13.5C8.5 11.5 10 10 12 10C13.5 10 15 11 15 11S16.5 10 18 10C20 10 21.5 11.5 21.5 13.5C21.5 17.5 15 21.5 15 21.5Z" fill="white" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* What We Offer Section */}
-        <WhatWeOffer />
-
-        {/* Contact and Footer Section */}
-        <ContactSection />
-      </main>
+              <WhatWeOffer />
+              <ContactSection />
+            </main>
+          }
+        />
+        <Route path="/service" element={<ServicePage />} />
+      </Routes>
     </div>
   );
 }

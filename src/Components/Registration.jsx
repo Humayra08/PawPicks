@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FooterLogoImg from "../Assets/logo.png";
 import OrangeCat from "../Assets/OrangeCat.png";
+import Last from "../Assets/Last.png";
 
-/** Top 5 Asian country codes (incl. Bangladesh) */
+/** Top 5 Asian country codes (incl. Bangladesh) — keep whatever list you prefer */
 const COUNTRY_CODES = [
   { code: "IN", name: "India",       dial: "+91" },
   { code: "CN", name: "China",       dial: "+86" },
@@ -13,11 +14,14 @@ const COUNTRY_CODES = [
 ];
 
 export default function Registration() {
-  const [activeNavLink, setActiveNavLink] = useState("");
+  const [activeNavLink, setActiveNavLink] = useState(""); // main nav not preselected
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
 
+  // slide-in state for the form card (left -> right)
+  const [formIn, setFormIn] = useState(false);
+
+  const navigate = useNavigate();
   const navItems = ["About", "Service", "Discovery", "Shop", "Contact"];
 
   useEffect(() => {
@@ -29,6 +33,12 @@ export default function Registration() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+
+  // trigger the slide-in animation on mount
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setFormIn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
@@ -46,7 +56,7 @@ export default function Registration() {
     repassword: "",
   });
 
-  // default you used before was +84; set what you prefer
+  // default to Bangladesh (change to your preference)
   const [dialCode, setDialCode] = useState("+880");
 
   const onChange = (e) => {
@@ -56,7 +66,7 @@ export default function Registration() {
 
   return (
     <div className="registration-page">
-      {/* NAVBAR */}
+      {/* NAVBAR (same look as homepage/login) */}
       <header className={`header ${headerVisible ? "visible" : "hidden"}`}>
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -91,6 +101,7 @@ export default function Registration() {
               </svg>
             </button>
 
+            {/* Register is active on this page */}
             <button type="button" className="auth-link active" onClick={goToRegister}>
               Register /
             </button>
@@ -104,8 +115,8 @@ export default function Registration() {
       {/* BODY: centered two-column layout */}
       <main className="register-root">
         <div className="register-container">
-          {/* LEFT: Registration form */}
-          <section className="register-form-card">
+          {/* LEFT: Registration form (slides in from left to right) */}
+          <section className={`register-form-card ${formIn ? "slide-in-right" : ""}`}>
             <div className="register-head">
               <div className="register-title">REGISTER</div>
               <span className="register-paw">🐾</span>
@@ -123,7 +134,7 @@ export default function Registration() {
                 onChange={onChange}
               />
 
-              {/* Phone with dial-code select (5 options) */}
+              {/* Phone with dial-code select */}
               <label className="register-label">Phone number</label>
               <div className="register-input input-with-prefix select-dial">
                 <select
@@ -228,6 +239,43 @@ export default function Registration() {
           </aside>
         </div>
       </main>
+
+      {/* FOOTER (exact same structure as homepage/login) */}
+      <footer className="contact-footer">
+        <div className="contact-footer-left">
+          <div className="footer-logo">
+            <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
+          </div>
+          <div className="footer-desc">
+            Welcome to Cuddle & Care Pets! We provide quality pet products,
+            grooming, and care advice for your furry friends.
+          </div>
+        </div>
+
+        <div className="contact-footer-center">
+          <div className="footer-polaroid">
+            <div className="footer-polaroid-frame">
+              <img src={Last} alt="Dog" className="footer-dog-img" />
+            </div>
+            <div className="footer-polaroid-dash"></div>
+          </div>
+        </div>
+
+        <div className="contact-footer-right">
+          <div className="footer-cols">
+            <div className="footer-col">
+              <div className="footer-col-title">Website</div>
+              <ul>
+                <li>About</li>
+                <li>Service</li>
+                <li>Discovery</li>
+                <li>Shop</li>
+                <li>Contact</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

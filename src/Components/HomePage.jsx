@@ -9,7 +9,7 @@ import Last from '../Assets/Last.png';
 function WhatWeOffer() {
   return (
     <section className="offer-section">
-      {/* TOP CENTERED TITLE */}
+      {/* T */}
       <div className="offer-title-top">
         WHAT WE OFFER
         <span className="offer-icon">

@@ -6,7 +6,7 @@ import OrangeCat from '../Assets/OrangeCat.png';
 import FooterLogoImg from '../Assets/logo.png';
 import LastDog from '../Assets/LastDog.png';
 import Last from '../Assets/Last.png';
-import ServicePage from './ServicePage.jsx'; // Make sure this exists!
+import ServicePage from './ServicePage.jsx'; 
 
 function WhatWeOffer() {
   return (
@@ -210,7 +210,7 @@ function App() {
     if (linkName === 'About') {
       navigate('/');
     }
-    // Add navigation for other links as needed
+    
   };
 
   const handleCardMouseEnter = (e) => {

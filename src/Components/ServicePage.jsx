@@ -7,6 +7,14 @@ import doggyImg from "../Assets/doggy.png";
 import FooterLogoImg from '../Assets/logo.png';
 import LastDog from '../Assets/LastDog.png';
 import Last from '../Assets/Last.png';
+
+import img1 from "../Assets/1.png";
+import img2 from "../Assets/2.png";
+import img3 from "../Assets/3.png";
+import img4 from "../Assets/4.png";
+import img5 from "../Assets/5.png";
+import img6 from "../Assets/6.png";
+
 import '../ServicePage.css';
 
 function ServicePage() {
@@ -100,6 +108,88 @@ function ServicePage() {
           </div>
         </div>
       </div>
+      {/* --- WHAT WE OFFER Section --- */}
+      <section className="offer-root">
+        <h2 className="offer-title">
+          WHAT WE OFFER <span className="paw-icon">🐾</span>
+        </h2>
+        <p className="offer-desc">
+          At our pet care center, we offer a comprehensive range of services to keep your pets happy and healthy. 
+          From grooming and bathing to ensure their look and feel their best, to veterinary check-ups and vaccinations 
+          for their health and safety, we cover all your pet’s needs. We also provide specialized training programs to 
+          help with behavior and obedience, as well as luxurious boarding facilities for when you’re away. 
+          Our dedicated team is passionate about providing the highest level of care and love for your furry friends, 
+          treating them as if they were our own.
+        </p>
+
+        {/* --- Service Rows --- */}
+        <div className="offer-row">
+          <div className="offer-text">
+            <h3><span className="offer-number">1</span> Group Training</h3>
+            <p>Our Group Training sessions help dogs learn commands in a social setting. 
+               These classes teach obedience and good manners, while allowing pets and owners to connect.</p>
+          </div>
+          <div className="offer-img">
+            <img src={img1} alt="Group Training" />
+          </div>
+        </div>
+
+        <div className="offer-row reverse">
+          <div className="offer-text">
+            <h3><span className="offer-number">2</span> Puppy Training</h3>
+            <p>Our Puppy Training classes focus on foundational skills like potty training and basic commands. 
+               It’s crucial for developing well-behaved dogs and provides support for new owners.</p>
+          </div>
+          <div className="offer-img">
+            <img src={img2} alt="Puppy Training" />
+          </div>
+        </div>
+
+        <div className="offer-row">
+          <div className="offer-text">
+            <h3><span className="offer-number">3</span> Private Training</h3>
+            <p>One-on-one attention with customized training plans tailored to your pet’s needs. 
+               Perfect for pets requiring focused guidance and special care.</p>
+          </div>
+          <div className="offer-img">
+            <img src={img3} alt="Private Training" />
+          </div>
+        </div>
+
+        <div className="offer-row reverse">
+          <div className="offer-text">
+            <h3><span className="offer-number">4</span> Specialty Program</h3>
+            <p>Unique programs designed for specific pet needs, from agility training to behavior correction, 
+               ensuring pets grow with confidence and balance.</p>
+          </div>
+          <div className="offer-img">
+            <img src={img4} alt="Specialty Program" />
+          </div>
+        </div>
+
+        <div className="offer-row">
+          <div className="offer-text">
+            <h3><span className="offer-number">5</span> Virtual Training</h3>
+            <p>Train your pet remotely with expert guidance. 
+               Convenient, effective, and tailored for pet owners who want flexibility without losing quality.</p>
+          </div>
+          <div className="offer-img">
+            <img src={img5} alt="Virtual Training" />
+          </div>
+        </div>
+
+        <div className="offer-row reverse">
+          <div className="offer-text">
+            <h3><span className="offer-number">6</span> Security Program</h3>
+            <p>Professional training programs focused on protection and safety, 
+               ensuring your pet is disciplined and ready to safeguard your home and loved ones.</p>
+          </div>
+          <div className="offer-img">
+            <img src={img6} alt="Security Program" />
+          </div>
+        </div>
+      </section>
+
 
       {/* --- Contact Section --- */}
       <section className="contact-root">

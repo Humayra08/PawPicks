@@ -79,6 +79,20 @@ body {
   transition: color 0.3s ease;
   position: relative;
 }
+.navbar-logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbar-logo-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #421F72;
+  letter-spacing: 0.02em;
+  font-family: inherit;
+}
 
 .nav-link.active,
 .nav-link:hover {
@@ -537,8 +551,8 @@ body {
 .circle-image-wrapper {
   position: relative;
   display: inline-block;
-  width: 220px;
-  height: 220px;
+  width: 320px;
+  height: 320px;
 }
 
 .contact-circle {
@@ -569,7 +583,7 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -45%);
-  width: 300px;
+  width: 400px;
   height: auto;
   max-width: 100%;
   z-index: 2;
@@ -623,21 +637,6 @@ body {
   font-size: 1rem;
   margin-bottom: 1.2rem;
   max-width: 260px;
-}
-
-.footer-contact-icons {
-  display: flex;
-  gap: 0.7rem;
-}
-
-.footer-contact-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 5px;
-  padding: 0.3rem;
-  box-shadow: 0 2px 8px rgba(68,34,106,0.08);
 }
 
 .footer-polaroid {

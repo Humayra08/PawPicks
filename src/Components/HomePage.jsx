@@ -3,7 +3,8 @@ import petsImage from '../Assets/pets.png';
 import FirstDog from '../Assets/FirstDog.png';
 import OrangeCat from '../Assets/OrangeCat.png';
 import FooterLogoImg from '../Assets/logo.png';
-import LastDog from '../Assets/LastDog.png'; // <-- Import your image here
+import LastDog from '../Assets/LastDog.png';
+import Last from '../Assets/Last.png';
 
 function WhatWeOffer() {
   return (
@@ -28,7 +29,7 @@ function WhatWeOffer() {
         <div className="circle circle2"></div>
         <div className="circle circle3"></div>
       </div>
-      {/* Centered pets image below the circles */}
+      {/* Ce */}
       <div className="offer-pets-image">
         <img src={petsImage} alt="pets" className="pets-image" />
       </div>
@@ -128,20 +129,13 @@ function ContactSection() {
             <div className="footer-desc">
               Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
             </div>
-            <div className="footer-contact-icons">
-              <span className="footer-contact-icon">
-                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M2.5 4.5A2.5 2.5 0 0 1 5 2h10a2.5 2.5 0 0 1 2.5 2.5v11A2.5 2.5 0 0 1 15 18H5a2.5 2.5 0 0 1-2.5-2.5v-11zm1.4 0h12.2a1.1 1.1 0 0 0-1.1-1.1H4.9a1.1 1.1 0 0 0-1.1 1.1zM10 10.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.5 6.5h11a1.5 1.5 0 0 0 1.5-1.5V8.7a4.5 4.5 0 1 1-14 0v7.8a1.5 1.5 0 0 0 1.5 1.5z" fill="#5B259D"/></svg>
-              </span>
-              <span className="footer-contact-icon">
-                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M2.5 3.5A1.5 1.5 0 0 1 4 2h12a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 16 18H4a1.5 1.5 0 0 1-1.5-1.5v-13zm1.1 0h13.8a.4.4 0 0 0-.4-.4H4a.4.4 0 0 0-.4.4zm7.4 7.8c.8.7 2.2 2.3 4.5 2.3.8 0 1.5-.1 1.5-1.3V4.7a.7.7 0 0 0-.7-.7H4.7a.7.7 0 0 0-.7.7v7.1c0 1.2.7 1.3 1.5 1.3 2.3 0 3.7-1.6 4.5-2.3z" fill="#5B259D"/></svg>
-              </span>
-            </div>
           </div>
           <div className="contact-footer-center">
             <div className="footer-polaroid">
               <div className="footer-polaroid-frame">
+                {/* U */}
                 <img
-                  src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop"
+                  src={Last}
                   alt="Dog"
                   className="footer-dog-img"
                 />
@@ -268,17 +262,9 @@ function App() {
       `}</style>
       <header className="header">
         <div className="nav-container">
-          <div className="logo">
-            <div className="paw-logo" onClick={handlePawClick}>
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="#7C3AED" />
-                <ellipse cx="20" cy="16" rx="4" ry="6" fill="white" />
-                <ellipse cx="13" cy="22" rx="3" ry="4" fill="white" />
-                <ellipse cx="27" cy="22" rx="3" ry="4" fill="white" />
-                <ellipse cx="16" cy="28" rx="2.5" ry="3" fill="white" />
-                <ellipse cx="24" cy="28" rx="2.5" ry="3" fill="white" />
-              </svg>
-            </div>
+          <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
+            <span className="navbar-logo-text">PawPicks</span>
           </div>
           <nav className="nav-menu">
             {navItems.map((item) => (

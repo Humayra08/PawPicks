@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FooterLogoImg from "../Assets/logo.png";
+import FirstDog from "../Assets/FirstDog.png"; // ⬅️ use this image
 
 export default function Login() {
-  const [activeNavLink, setActiveNavLink] = useState(""); // no main-nav item preselected
+  const [activeNavLink, setActiveNavLink] = useState("");
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
@@ -29,8 +30,15 @@ export default function Login() {
   const goToRegister = (e) => { e.preventDefault(); navigate("/register"); };
   const goToLogin = (e) => { e.preventDefault(); navigate("/login"); };
 
+  const [form, setForm] = useState({ fullname: "", password: "", remember: false });
+  const onChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+  };
+
   return (
     <div className="login-page">
+      {/* NAVBAR */}
       <header className={`header ${headerVisible ? "visible" : "hidden"}`}>
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -65,7 +73,6 @@ export default function Login() {
               </svg>
             </button>
 
-            {/* auth items — Login is active on this page */}
             <button type="button" className="auth-link" onClick={goToRegister}>
               Register /
             </button>
@@ -76,8 +83,90 @@ export default function Login() {
         </div>
       </header>
 
-      {/* body remains blank for now */}
-      <main style={{ minHeight: "100vh", background: "#ffffff" }} />
+      {/* BODY: two columns (flex) with extra gap and centered dog */}
+      <main className="login-root">
+        <div className="login-container">
+          {/* LEFT: form card */}
+          <section className="login-form-card">
+            <div className="login-head">
+              <div>
+                <div className="login-title-line1">WELCOME TO</div>
+                <div className="login-title-line2">PET PARADISE</div>
+              </div>
+              <span className="login-paw">🐾</span>
+            </div>
+
+            <p className="login-desc">
+              We offer expert pet training, high-quality food, and everything
+              your pet needs to stay happy and healthy.
+            </p>
+
+            <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+              <label className="login-label">Full Name</label>
+              <input
+                className="login-input"
+                type="text"
+                name="fullname"
+                placeholder="Jamila Mohammad"
+                value={form.fullname}
+                onChange={onChange}
+              />
+
+              <label className="login-label">Password</label>
+              <input
+                className="login-input"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={onChange}
+              />
+
+              <div className="login-remember">
+                <input
+                  id="remember"
+                  type="checkbox"
+                  name="remember"
+                  checked={form.remember}
+                  onChange={onChange}
+                />
+                <label htmlFor="remember">Remember me</label>
+              </div>
+
+              <button className="login-primary-btn" type="submit">Log In</button>
+
+              <div className="login-muted">
+                Don’t have an account?
+                <button type="button" className="login-link" onClick={goToRegister}>
+                  {" "}Register here
+                </button>
+              </div>
+
+              <div className="login-or">
+                <span className="login-or-line" />
+                <span className="login-or-text">Or</span>
+                <span className="login-or-line" />
+              </div>
+
+              <button type="button" className="login-social-btn">
+                <span>🔍</span> <span>Sign In With Google</span>
+              </button>
+
+              <button type="button" className="login-social-btn">
+                <span>💼</span> <span>Sign In With LinkedIn</span>
+              </button>
+            </form>
+          </section>
+
+          {/* RIGHT: teal box centered with dog in the center */}
+          <aside className="login-visual center-dog">
+            <h2 className="login-right-title">
+              HEALTHY PETS BRING JOY<br />AND ENRICH YOUR LIFE.
+            </h2>
+            <img src={FirstDog} alt="Puppy" className="login-dog" />
+          </aside>
+        </div>
+      </main>
     </div>
   );
 }

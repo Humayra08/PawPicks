@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import petsImage from '../Assets/pets.png'; // Make sure pets.png is in src/assets/
+import petsImage from '../Assets/pets.png';
+import FirstDog from '../Assets/FirstDog.png';
+import OrangeCat from '../Assets/OrangeCat.png';
 
 function WhatWeOffer() {
   return (
@@ -106,7 +108,7 @@ function App() {
     }, 500);
   };
 
-  const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact', 'Course'];
+  const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
 
   return (
     <div className="pet-care-app">
@@ -167,7 +169,8 @@ function App() {
                 <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
             </button>
-            <div className="auth-link">Register / Login</div>
+            <div className="auth-link">Register /</div>
+            <div className="auth-link">Login</div>
           </div>
         </div>
       </header>
@@ -188,14 +191,14 @@ function App() {
               </div>
               <div className="main-pet-image">
                 <img
-                  src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=350&fit=crop&crop=face"
+                  src={FirstDog}
                   alt="Adorable puppy"
                   className="puppy-image"
                 />
               </div>
               <div className="orange-cat">
                 <img
-                  src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&h=150&fit=crop&crop=face"
+                  src={OrangeCat}
                   alt="Orange cat"
                   className="cat-image"
                 />

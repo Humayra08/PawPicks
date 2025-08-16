@@ -901,7 +901,6 @@ body {
   justify-content: center;
 }
 
-/* Left form */
 .login-form-card {
   flex: 1;
   min-width: 320px;
@@ -1054,7 +1053,6 @@ body {
   border-color: #cbd5e1;
 }
 
-/* Right visual */
 .login-visual {
   flex: 1;
   min-width: 320px;
@@ -1095,7 +1093,6 @@ body {
   user-select: none;
 }
 
-/* Community card inside visual */
 .login-community-card {
   position: absolute;
   left: 50%;
@@ -1197,7 +1194,6 @@ body {
   transform: translateY(1px);
 }
 
-/* Login responsive */
 @media (max-width: 1000px) {
   .login-container {
     flex-direction: column;
@@ -1244,18 +1240,15 @@ body {
   }
 }
 
-/* ===== Login form slide-in (from left -> to right) ===== */
 @keyframes slideInRight {
   0% {
     opacity: 0;
     transform: translateX(-64px);
-    /* start a bit to the LEFT */
   }
 
   100% {
     opacity: 1;
     transform: translateX(0);
-    /* settle in place */
   }
 }
 
@@ -1264,7 +1257,6 @@ body {
   will-change: transform, opacity;
 }
 
-/* Respect users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .login-form-card.slide-in-right {
     animation: none;
@@ -1272,48 +1264,37 @@ body {
 }
 
 /* ============================
-   REGISTRATION PAGE – FULL CSS
+      REGISTRATION PAGE 
    ============================ */
 
-/* Root area that holds the two-column registration layout */
 .register-root {
   background: #ffffff;
   padding: 40px 2rem 60px;
   display: flex;
   justify-content: center;
-  /* center the two columns as a group */
   min-height: calc(100vh - 80px);
 }
 
-/* 1200px content wrapper */
+
 .register-container {
   width: 1200px;
   max-width: 95vw;
   display: flex;
   gap: 32px;
-  /* space between form and visual */
   align-items: stretch;
-  /* ensures equal heights by default */
   justify-content: center;
   box-sizing: border-box;
 }
 
-/* --------------------
-   Equal columns
-   -------------------- */
 .register-form-card,
 .register-visual {
   flex: 1 1 0;
   /* 50/50 split */
   max-width: none;
   min-height: 560px;
-  /* matching baseline height */
   box-sizing: border-box;
 }
 
-/* ============================
-   Left: form card
-   ============================ */
 .register-form-card {
   background: #f6edff;
   border: 1px solid #e6dbff;
@@ -1353,7 +1334,6 @@ body {
   margin-top: 6px;
 }
 
-/* Generic input */
 .register-input {
   width: 100%;
   padding: 11px 12px;
@@ -1374,10 +1354,10 @@ body {
   align-items: center;
   gap: 10px;
   padding-left: 0;
-  /* tight to the select */
+  
 }
 
-/* dial-code select (sits inside the same row as the tel input) */
+
 .dial-select {
   border: none;
   background: transparent;
@@ -1385,7 +1365,6 @@ body {
   padding: 0 10px 0 12px;
   outline: none;
   border-right: 1px solid #e0d7f2;
-  /* subtle vertical divider */
   font: inherit;
   color: #333;
 }
@@ -1394,7 +1373,6 @@ body {
   padding-left: 12px;
 }
 
-/* Stepper dots (decorative) */
 .register-stepper {
   display: flex;
   align-items: center;
@@ -1436,7 +1414,7 @@ body {
   transform: translateY(1px);
 }
 
-/* inline helper text + link */
+
 .register-muted {
   margin-top: 8px;
   text-align: center;
@@ -1471,7 +1449,7 @@ body {
   color: #8c84a7;
 }
 
-/* Social buttons */
+
 .register-social-btn {
   width: 100%;
   display: flex;
@@ -1491,9 +1469,6 @@ body {
   border-color: #cfc3f4;
 }
 
-/* ============================
-   Right: green visual panel
-   ============================ */
 .register-visual {
   border-radius: 16px;
   padding: 28px;
@@ -1501,7 +1476,7 @@ body {
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
 
-  /* Background gradient + soft radial bloom */
+
   background:
     radial-gradient(ellipse at 50% 55%,
       rgba(255, 255, 255, 0.52) 0%,
@@ -1524,7 +1499,7 @@ body {
   text-transform: uppercase;
 }
 
-/* Center the hero image */
+
 .register-visual-center {
   position: absolute;
   inset: 0;
@@ -1543,7 +1518,7 @@ body {
   pointer-events: none;
 }
 
-/* Translucent benefits card at the bottom */
+
 .register-benefit-card {
   position: absolute;
   left: 28px;
@@ -1569,16 +1544,13 @@ body {
   margin: 6px 0 0;
 }
 
-/* ============================
-   Form slide-in animation (left → right)
-   ============================ */
 @keyframes slideInRight {
   0% {
     opacity: 0;
     transform: translateX(-64px);
   }
 
-  /* start a bit to the LEFT */
+
   100% {
     opacity: 1;
     transform: translateX(0);
@@ -1590,16 +1562,13 @@ body {
   will-change: transform, opacity;
 }
 
-/* Respect users who prefer reduced motion */
+
 @media (prefers-reduced-motion: reduce) {
   .register-form-card.slide-in-right {
     animation: none;
   }
 }
 
-/* ============================
-   Responsive
-   ============================ */
 @media (max-width: 1000px) {
   .register-container {
     flex-direction: column;
@@ -1612,7 +1581,7 @@ body {
     width: 100%;
     max-width: 100%;
     min-height: auto;
-    /* natural height when stacked */
+   
   }
 
   .register-visual {

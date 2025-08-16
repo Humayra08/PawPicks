@@ -4,7 +4,6 @@ import FooterLogoImg from "../Assets/logo.png";
 import OrangeCat from "../Assets/OrangeCat.png";
 import Last from "../Assets/Last.png";
 
-/** Top 5 Asian country codes (incl. Bangladesh) — keep whatever list you prefer */
 const COUNTRY_CODES = [
   { code: "IN", name: "India",       dial: "+91" },
   { code: "CN", name: "China",       dial: "+86" },
@@ -14,7 +13,7 @@ const COUNTRY_CODES = [
 ];
 
 export default function Registration() {
-  const [activeNavLink, setActiveNavLink] = useState(""); // main nav not preselected
+  const [activeNavLink, setActiveNavLink] = useState(""); 
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -34,7 +33,6 @@ export default function Registration() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // trigger the slide-in animation on mount
   useEffect(() => {
     const id = requestAnimationFrame(() => setFormIn(true));
     return () => cancelAnimationFrame(id);
@@ -56,7 +54,7 @@ export default function Registration() {
     repassword: "",
   });
 
-  // default to Bangladesh (change to your preference)
+
   const [dialCode, setDialCode] = useState("+880");
 
   const onChange = (e) => {
@@ -66,7 +64,7 @@ export default function Registration() {
 
   return (
     <div className="registration-page">
-      {/* NAVBAR (same look as homepage/login) */}
+    
       <header className={`header ${headerVisible ? "visible" : "hidden"}`}>
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -115,7 +113,7 @@ export default function Registration() {
       {/* BODY: centered two-column layout */}
       <main className="register-root">
         <div className="register-container">
-          {/* LEFT: Registration form (slides in from left to right) */}
+         
           <section className={`register-form-card ${formIn ? "slide-in-right" : ""}`}>
             <div className="register-head">
               <div className="register-title">REGISTER</div>
@@ -134,7 +132,6 @@ export default function Registration() {
                 onChange={onChange}
               />
 
-              {/* Phone with dial-code select */}
               <label className="register-label">Phone number</label>
               <div className="register-input input-with-prefix select-dial">
                 <select
@@ -212,7 +209,6 @@ export default function Registration() {
             </form>
           </section>
 
-          {/* RIGHT: green visual with centered image & benefits overlay */}
           <aside className="register-visual">
             <h2 className="register-right-title">
               BECOME A MEMBER TODAY<br />
@@ -240,7 +236,7 @@ export default function Registration() {
         </div>
       </main>
 
-      {/* FOOTER (exact same structure as homepage/login) */}
+     
       <footer className="contact-footer">
         <div className="contact-footer-left">
           <div className="footer-logo">

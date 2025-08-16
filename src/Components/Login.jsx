@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-/* Images (keep the capital A — your project uses /Assets/) */
+
 import FooterLogoImg from "../Assets/logo.png";
 import FirstDog from "../Assets/FirstDog.png";
 import avatar1 from "../Assets/avatar1.png";
@@ -30,7 +30,6 @@ export default function Login() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // trigger the slide-in animation once the component mounts
   useEffect(() => {
     const id = requestAnimationFrame(() => setFormIn(true));
     return () => cancelAnimationFrame(id);
@@ -228,7 +227,7 @@ export default function Login() {
         </div>
       </main>
 
-      {/* FOOTER (same as homepage) */}
+      
       <footer className="contact-footer">
         <div className="contact-footer-left">
           <div className="footer-logo">

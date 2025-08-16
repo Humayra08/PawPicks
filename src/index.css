@@ -424,6 +424,336 @@ body {
   z-index: 2;
 }
 
+
+/* Add this after your existing CSS in index.css */
+
+/* --- Contact and Footer Styles --- */
+.contact-root {
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.contact-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 56px 0 0 0;
+  width: 100%;
+  min-height: 370px;
+  position: relative;
+}
+
+.contact-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 5vw;
+}
+
+.contact-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #421F72;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.paw-icon {
+  font-size: 1.5rem;
+  vertical-align: middle;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.contact-input {
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.contact-input:focus {
+  border-color: #8b5cf6;
+}
+
+.contact-btn-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.contact-submit-btn {
+  background: #421F72;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.contact-submit-btn:hover {
+  background: #2a1049;
+}
+
+.contact-refresh-btn {
+  background: #fff;
+  color: #421F72;
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+
+.contact-refresh-btn:hover {
+  background: #f3f3f3;
+  border-color: #421F72;
+}
+
+.contact-right {
+  margin-top: 50px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 20vw;
+}
+.circle-image-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 220px;
+  height: 220px;
+}
+
+.contact-circle {
+  width: 220px;
+  height: 220px;
+  border: 5px solid #421F72;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-circle-inner {
+  width: 220px;
+  height: 210px;
+  border: 10px solid #e3c2f7;
+  border-radius: 50%;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.circle-main-image {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -45%);
+  width: 300px;
+  height: auto;
+  max-width: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Footer styles */
+.contact-footer {
+  width: 100%;
+  background: #ece3fa;
+  padding: 0;
+  margin: 0;
+  margin-top: auto; /* Stick to bottom */
+  border-top-left-radius: 120px 60px;
+  border-top-right-radius: 120px 60px;
+  min-height: 320px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-footer-left,
+.contact-footer-center,
+.contact-footer-right {
+  flex: 1;
+  padding: 3rem 2vw 2rem 5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.contact-footer-center {
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+
+
+.footer-logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+.footer-desc {
+  color: #421F72;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  max-width: 260px;
+}
+
+.footer-contact-icons {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.footer-contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 5px;
+  padding: 0.3rem;
+  box-shadow: 0 2px 8px rgba(68,34,106,0.08);
+}
+
+.footer-polaroid {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-polaroid-frame {
+  width: 160px;
+  height: 190px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(68,34,106,0.10);
+  padding: 10px;
+  transform: rotate(8deg);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-dog-img {
+  width: 140px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #d8f1e1;
+}
+
+.footer-polaroid-dash {
+  position: absolute;
+  top: -20px;
+  left: -12px;
+  width: 186px;
+  height: 200px;
+  border: 2px dashed #a68bcf;
+  border-radius: 18px;
+  z-index: 1;
+}
+
+.contact-footer-right {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.footer-cols {
+  padding-right: 5rem;
+  display: flex;
+  gap: 2.5rem;
+}
+
+.footer-col-title {
+  font-weight: 600;
+  color: #421F72;
+  margin-bottom: 1rem;
+  font-size: 1.07rem;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col li {
+  color: #421F72;
+  font-size: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+@media (max-width: 900px) {
+  .contact-main {
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0 0 0;
+  }
+  .contact-left, .contact-right {
+    padding: 0;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  .contact-circle {
+    margin-top: 2rem;
+  }
+  .contact-footer {
+    flex-direction: column;
+    align-items: center;
+    border-top-left-radius: 70px 30px;
+    border-top-right-radius: 70px 30px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  
+  .contact-footer-left, .contact-footer-center, .contact-footer-right {
+    padding: 2rem 2vw;
+    width: 100%;
+    align-items: center;
+  }
+  .footer-polaroid {
+    margin: 2rem 0;
+  }
+  .footer-cols {
+    justify-content: center;
+    gap: 1.2rem;
+  }
+}
+
+
+
 /* Responsive - adjust curve for smaller screens */
 @media (max-width: 900px) {
   .offer-circles {

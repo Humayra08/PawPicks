@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import petsImage from '../Assets/pets.png';
 import FirstDog from '../Assets/FirstDog.png';
 import OrangeCat from '../Assets/OrangeCat.png';
+import FooterLogoImg from '../Assets/logo.png';
+import LastDog from '../Assets/LastDog.png'; // <-- Import your image here
 
 function WhatWeOffer() {
   return (
@@ -29,6 +31,139 @@ function WhatWeOffer() {
       {/* Centered pets image below the circles */}
       <div className="offer-pets-image">
         <img src={petsImage} alt="pets" className="pets-image" />
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+  };
+
+  const handleRefresh = () => {
+    setFormData({
+      fullName: "",
+      phoneNumber: "",
+      email: "",
+    });
+  };
+
+  return (
+    <section>
+      <div className="contact-root">
+        <div className="contact-main">
+          <div className="contact-left">
+            <h2 className="contact-title">
+              CONTACT WITH US <span className="paw-icon">🐾</span>
+            </h2>
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="fullName"
+                placeholder="Full Name"
+                value={formData.fullName}
+                onChange={handleInputChange}
+                className="contact-input"
+              />
+              <input
+                type="tel"
+                name="phoneNumber"
+                placeholder="Phone Number"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                className="contact-input"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="contact-input"
+              />
+              <div className="contact-btn-group">
+                <button type="submit" className="contact-submit-btn">
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  className="contact-refresh-btn"
+                  onClick={handleRefresh}
+                >
+                  Refresh
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className="contact-right">
+            <div className="circle-image-wrapper">
+              <div className="contact-circle">
+                <div className="contact-circle-inner"></div>
+              </div>
+              <img src={LastDog} alt="Dog and Cat" className="circle-main-image" />
+            </div>
+          </div>
+        </div>
+        <div className="contact-footer">
+          <div className="contact-footer-left">
+            <div className="footer-logo">
+              <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
+            </div>
+            <div className="footer-desc">
+              Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
+            </div>
+            <div className="footer-contact-icons">
+              <span className="footer-contact-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M2.5 4.5A2.5 2.5 0 0 1 5 2h10a2.5 2.5 0 0 1 2.5 2.5v11A2.5 2.5 0 0 1 15 18H5a2.5 2.5 0 0 1-2.5-2.5v-11zm1.4 0h12.2a1.1 1.1 0 0 0-1.1-1.1H4.9a1.1 1.1 0 0 0-1.1 1.1zM10 10.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.5 6.5h11a1.5 1.5 0 0 0 1.5-1.5V8.7a4.5 4.5 0 1 1-14 0v7.8a1.5 1.5 0 0 0 1.5 1.5z" fill="#5B259D"/></svg>
+              </span>
+              <span className="footer-contact-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20"><path d="M2.5 3.5A1.5 1.5 0 0 1 4 2h12a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 16 18H4a1.5 1.5 0 0 1-1.5-1.5v-13zm1.1 0h13.8a.4.4 0 0 0-.4-.4H4a.4.4 0 0 0-.4.4zm7.4 7.8c.8.7 2.2 2.3 4.5 2.3.8 0 1.5-.1 1.5-1.3V4.7a.7.7 0 0 0-.7-.7H4.7a.7.7 0 0 0-.7.7v7.1c0 1.2.7 1.3 1.5 1.3 2.3 0 3.7-1.6 4.5-2.3z" fill="#5B259D"/></svg>
+              </span>
+            </div>
+          </div>
+          <div className="contact-footer-center">
+            <div className="footer-polaroid">
+              <div className="footer-polaroid-frame">
+                <img
+                  src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop"
+                  alt="Dog"
+                  className="footer-dog-img"
+                />
+              </div>
+              <div className="footer-polaroid-dash"></div>
+            </div>
+          </div>
+          <div className="contact-footer-right">
+            <div className="footer-cols">
+              <div className="footer-col">
+                <div className="footer-col-title">Website</div>
+                <ul>
+                  <li>About</li>
+                  <li>Service</li>
+                  <li>Discovery</li>
+                  <li>Shop</li>
+                  <li>Contact</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -256,6 +391,9 @@ function App() {
         </div>
         {/* What We Offer Section */}
         <WhatWeOffer />
+
+        {/* Contact and Footer Section */}
+        <ContactSection />
       </main>
     </div>
   );

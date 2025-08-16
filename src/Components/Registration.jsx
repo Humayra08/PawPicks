@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FooterLogoImg from "../Assets/logo.png";
+import OrangeCat from "../Assets/OrangeCat.png";
+
+/** Top 5 Asian country codes (incl. Bangladesh) */
+const COUNTRY_CODES = [
+  { code: "IN", name: "India",       dial: "+91" },
+  { code: "CN", name: "China",       dial: "+86" },
+  { code: "BD", name: "Bangladesh",  dial: "+880" },
+  { code: "PK", name: "Pakistan",    dial: "+92" },
+  { code: "ID", name: "Indonesia",   dial: "+62" },
+];
 
 export default function Registration() {
-  const [activeNavLink, setActiveNavLink] = useState(""); // no main-nav item preselected
+  const [activeNavLink, setActiveNavLink] = useState("");
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
@@ -13,8 +23,7 @@ export default function Registration() {
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
-      if (y > lastScrollY && y > 100) setHeaderVisible(false);
-      else setHeaderVisible(true);
+      setHeaderVisible(!(y > lastScrollY && y > 100));
       setLastScrollY(y);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -27,10 +36,27 @@ export default function Registration() {
   };
 
   const goToRegister = (e) => { e.preventDefault(); navigate("/register"); };
-  const goToLogin = (e) => { e.preventDefault(); navigate("/login"); };
+  const goToLogin    = (e) => { e.preventDefault(); navigate("/login"); };
+
+  // form state
+  const [form, setForm] = useState({
+    fullname: "",
+    phone: "",
+    password: "",
+    repassword: "",
+  });
+
+  // default you used before was +84; set what you prefer
+  const [dialCode, setDialCode] = useState("+880");
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+  };
 
   return (
     <div className="registration-page">
+      {/* NAVBAR */}
       <header className={`header ${headerVisible ? "visible" : "hidden"}`}>
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -65,7 +91,6 @@ export default function Registration() {
               </svg>
             </button>
 
-            {/* auth items — Register is active on this page */}
             <button type="button" className="auth-link active" onClick={goToRegister}>
               Register /
             </button>
@@ -76,8 +101,133 @@ export default function Registration() {
         </div>
       </header>
 
-      {/* body remains blank for now */}
-      <main style={{ minHeight: "100vh", background: "#ffffff" }} />
+      {/* BODY: centered two-column layout */}
+      <main className="register-root">
+        <div className="register-container">
+          {/* LEFT: Registration form */}
+          <section className="register-form-card">
+            <div className="register-head">
+              <div className="register-title">REGISTER</div>
+              <span className="register-paw">🐾</span>
+            </div>
+
+            <form className="register-form" onSubmit={(e) => e.preventDefault()}>
+              {/* Full name */}
+              <label className="register-label">Full name</label>
+              <input
+                className="register-input"
+                type="text"
+                name="fullname"
+                placeholder="Your full name"
+                value={form.fullname}
+                onChange={onChange}
+              />
+
+              {/* Phone with dial-code select (5 options) */}
+              <label className="register-label">Phone number</label>
+              <div className="register-input input-with-prefix select-dial">
+                <select
+                  className="dial-select"
+                  value={dialCode}
+                  onChange={(e) => setDialCode(e.target.value)}
+                  aria-label="Country dial code"
+                >
+                  {COUNTRY_CODES.map((c) => (
+                    <option key={c.code} value={c.dial}>
+                      {c.dial} {c.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="938772416"
+                  value={form.phone}
+                  onChange={onChange}
+                />
+              </div>
+
+              {/* Passwords */}
+              <label className="register-label">Password</label>
+              <input
+                className="register-input"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={onChange}
+              />
+
+              <label className="register-label">Re-password</label>
+              <input
+                className="register-input"
+                type="password"
+                name="repassword"
+                placeholder="Re-password"
+                value={form.repassword}
+                onChange={onChange}
+              />
+
+              {/* Stepper dots (decorative) */}
+              <div className="register-stepper">
+                <span className="dot active" />
+                <span className="dot" />
+              </div>
+
+              <button className="register-primary-btn" type="submit">
+                Submit
+              </button>
+
+              <div className="register-muted">
+                Already have account?
+                <button type="button" className="register-link" onClick={goToLogin}>
+                  {" "}Login Here
+                </button>
+              </div>
+
+              <div className="register-or">
+                <span className="register-or-line" />
+                <span className="register-or-text">Or</span>
+                <span className="register-or-line" />
+              </div>
+
+              <button type="button" className="register-social-btn">
+                <span>🔍</span> <span>Sign Up With Google</span>
+              </button>
+
+              <button type="button" className="register-social-btn">
+                <span>💼</span> <span>Sign Up With Linkedin</span>
+              </button>
+            </form>
+          </section>
+
+          {/* RIGHT: green visual with centered image & benefits overlay */}
+          <aside className="register-visual">
+            <h2 className="register-right-title">
+              BECOME A MEMBER TODAY<br />
+              AND HELP PROTECT<br />
+              ANIMALS!
+            </h2>
+
+            <div className="register-visual-center">
+              <img src={OrangeCat} alt="Cute pets" className="register-hero-img" />
+            </div>
+
+            {/* translucent info card at the bottom */}
+            <div className="register-benefit-card">
+              <div className="benefit-title">
+                Member Benefits: Exclusive Discounts, Rewards
+              </div>
+              <p className="benefit-text">
+                <strong>Exclusive Discounts:</strong> Enjoy special pricing on pet food, toys, and accessories.
+              </p>
+              <p className="benefit-text">
+                <strong>Early Access:</strong> Be the first to know about new products and promotions.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </main>
     </div>
   );
 }

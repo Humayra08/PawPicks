@@ -1243,3 +1243,26 @@ body {
     padding: 8px 12px;
   }
 }
+/* ===== Login form slide-in (from left -> to right) ===== */
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-64px); /* start a bit to the LEFT */
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);     /* settle in place */
+  }
+}
+
+.login-form-card.slide-in-right {
+  animation: slideInRight 700ms cubic-bezier(.2, .8, .2, 1) both;
+  will-change: transform, opacity;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .login-form-card.slide-in-right {
+    animation: none;
+  }
+}

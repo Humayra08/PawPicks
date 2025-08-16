@@ -1,39 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+/* Images (keep the capital A — your project uses /Assets/) */
 import FooterLogoImg from "../Assets/logo.png";
 import FirstDog from "../Assets/FirstDog.png";
 import avatar1 from "../Assets/avatar1.png";
 import avatar2 from "../Assets/avatar2.png";
 import avatar3 from "../Assets/avatar3.png";
+import Last from "../Assets/Last.png";
 
 export default function Login() {
   const [activeNavLink, setActiveNavLink] = useState("");
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
 
+  // slide-in state for the form card
+  const [formIn, setFormIn] = useState(false);
+
+  const navigate = useNavigate();
   const navItems = ["About", "Service", "Discovery", "Shop", "Contact"];
 
   useEffect(() => {
     const handleScroll = () => {
       const y = window.scrollY;
-      if (y > lastScrollY && y > 100) setHeaderVisible(false);
-      else setHeaderVisible(true);
+      setHeaderVisible(!(y > lastScrollY && y > 100));
       setLastScrollY(y);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // trigger the slide-in animation once the component mounts
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setFormIn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
   };
 
-  const goToRegister = (e) => { e.preventDefault(); navigate("/register"); };
-  const goToLogin = (e) => { e.preventDefault(); navigate("/login"); };
+  const goToRegister = (e) => {
+    e.preventDefault();
+    navigate("/register");
+  };
+  const goToLogin = (e) => {
+    e.preventDefault();
+    navigate("/login");
+  };
 
-  const [form, setForm] = useState({ fullname: "", password: "", remember: false });
+  const [form, setForm] = useState({
+    fullname: "",
+    password: "",
+    remember: false,
+  });
+
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
@@ -86,11 +108,11 @@ export default function Login() {
         </div>
       </header>
 
-      {/* BODY */}
+      {/* BODY: two columns */}
       <main className="login-root">
         <div className="login-container">
-          {/* LEFT: form card */}
-          <section className="login-form-card">
+          {/* LEFT: form card — slides from left to right on mount */}
+          <section className={`login-form-card ${formIn ? "slide-in-right" : ""}`}>
             <div className="login-head">
               <div>
                 <div className="login-title-line1">WELCOME TO</div>
@@ -136,7 +158,9 @@ export default function Login() {
                 <label htmlFor="remember">Remember me</label>
               </div>
 
-              <button className="login-primary-btn" type="submit">Log In</button>
+              <button className="login-primary-btn" type="submit">
+                Log In
+              </button>
 
               <div className="login-muted">
                 Don’t have an account?
@@ -166,6 +190,7 @@ export default function Login() {
             <h2 className="login-right-title">
               HEALTHY PETS BRING JOY<br />AND ENRICH YOUR LIFE.
             </h2>
+
             <img src={FirstDog} alt="Puppy" className="login-dog" />
 
             <div className="login-community-card">
@@ -187,7 +212,7 @@ export default function Login() {
                     </div>
                     <div className="community-badge-text">
                       <div className="community-badge-title">
-                        JOIN WITH 100K+<br/>PEOPLES ON THE WORLD !
+                        JOIN WITH 100K+<br />PEOPLES ON THE WORLD !
                       </div>
                       <div className="community-badge-caption">
                         Let meet some new friend on community
@@ -202,6 +227,43 @@ export default function Login() {
           </aside>
         </div>
       </main>
+
+      {/* FOOTER (same as homepage) */}
+      <footer className="contact-footer">
+        <div className="contact-footer-left">
+          <div className="footer-logo">
+            <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
+          </div>
+          <div className="footer-desc">
+            Welcome to Cuddle & Care Pets! We provide quality pet products,
+            grooming, and care advice for your furry friends.
+          </div>
+        </div>
+
+        <div className="contact-footer-center">
+          <div className="footer-polaroid">
+            <div className="footer-polaroid-frame">
+              <img src={Last} alt="Dog" className="footer-dog-img" />
+            </div>
+            <div className="footer-polaroid-dash"></div>
+          </div>
+        </div>
+
+        <div className="contact-footer-right">
+          <div className="footer-cols">
+            <div className="footer-col">
+              <div className="footer-col-title">Website</div>
+              <ul>
+                <li>About</li>
+                <li>Service</li>
+                <li>Discovery</li>
+                <li>Shop</li>
+                <li>Contact</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

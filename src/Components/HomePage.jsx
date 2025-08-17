@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ routing
 import petsImage from '../Assets/pets.png';
 import FirstDog from '../Assets/FirstDog.png';
 import OrangeCat from '../Assets/OrangeCat.png';
@@ -168,6 +169,10 @@ function App() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  const navigate = useNavigate();                 // ✅ router
+  const goToLogin = (e) => { e?.preventDefault?.(); navigate('/login'); };
+  const goToRegister = (e) => { e?.preventDefault?.(); navigate('/register'); }; // ✅ now goes to /register
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -178,7 +183,6 @@ function App() {
       }
       setLastScrollY(currentScrollY);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
@@ -196,7 +200,6 @@ function App() {
         }, index * 200);
       });
     };
-
     setTimeout(animateProgressBars, 1000);
     console.log('Pet Care Website loaded successfully! 🐾');
   }, []);
@@ -218,23 +221,17 @@ function App() {
   const handleCardClick = (e) => {
     const card = e.currentTarget;
     card.style.animation = 'bounce 0.6s ease';
-    setTimeout(() => {
-      card.style.animation = '';
-    }, 600);
+    setTimeout(() => { card.style.animation = ''; }, 600);
   };
   const handleHeartClick = (e) => {
     const heart = e.currentTarget;
     heart.style.animation = 'heartBeat 0.8s ease';
-    setTimeout(() => {
-      heart.style.animation = 'float 3s ease-in-out infinite';
-    }, 800);
+    setTimeout(() => { heart.style.animation = 'float 3s ease-in-out infinite'; }, 800);
   };
   const handlePawClick = (e) => {
     const paw = e.currentTarget;
     paw.style.animation = 'wiggle 0.5s ease';
-    setTimeout(() => {
-      paw.style.animation = '';
-    }, 500);
+    setTimeout(() => { paw.style.animation = ''; }, 500);
   };
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
@@ -242,30 +239,19 @@ function App() {
   return (
     <div className="pet-care-app">
       <style>{`
-        @keyframes bounce {
-          0%, 20%, 60%, 100% { transform: translateY(0) scale(1); }
-          40% { transform: translateY(-10px) scale(1.1); }
-          80% { transform: translateY(-5px) scale(1.05); }
-        }
-        @keyframes heartBeat {
-          0% { transform: scale(1); }
-          14% { transform: scale(1.3); }
-          28% { transform: scale(1); }
-          42% { transform: scale(1.3); }
-          70% { transform: scale(1); }
-        }
-        @keyframes wiggle {
-          0%, 7%, 14%, 21%, 28%, 35%, 42%, 49%, 56%, 63%, 70%, 77%, 84%, 91%, 98%, 100% { transform: rotate(0deg);}
-          3.5%, 10.5%, 17.5%, 24.5%, 31.5%, 38.5%, 45.5%, 52.5%, 59.5%, 66.5%, 73.5%, 80.5%, 87.5%, 94.5% {transform: rotate(-3deg);}
-        }
-        .header { transition: transform 0.3s ease; transform: translateY(${headerVisible ? '0' : '-100%'});}
+        @keyframes bounce { 0%,20%,60%,100%{transform:translateY(0) scale(1);}40%{transform:translateY(-10px) scale(1.1);}80%{transform:translateY(-5px) scale(1.05);} }
+        @keyframes heartBeat { 0%{transform:scale(1);}14%{transform:scale(1.3);}28%{transform:scale(1);}42%{transform:scale(1.3);}70%{transform:scale(1);} }
+        @keyframes wiggle { 0%,7%,14%,21%,28%,35%,42%,49%,56%,63%,70%,77%,84%,91%,98%,100%{transform:rotate(0deg);}3.5%,10.5%,17.5%,24.5%,31.5%,38.5%,45.5%,52.5%,59.5%,66.5%,73.5%,80.5%,87.5%,94.5%{transform:rotate(-3deg);} }
+        .header { transition: transform 0.3s ease; transform: translateY(${headerVisible ? '0' : '-100%'}); }
       `}</style>
+
       <header className="header">
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
             <span className="navbar-logo-text">PawPicks</span>
           </div>
+
           <nav className="nav-menu">
             {navItems.map((item) => (
               <a
@@ -278,23 +264,42 @@ function App() {
               </a>
             ))}
           </nav>
+
           <div className="nav-actions">
-            <button className="notification-btn">
+            <button className="notification-btn" aria-label="Notifications">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
                 <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            <button className="cart-btn">
+
+            <button className="cart-btn" aria-label="Cart">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
             </button>
-            <div className="auth-link">Register /</div>
-            <div className="auth-link">Login</div>
+
+            {/* ✅ Register -> /register, Login -> /login */}
+            <button
+              type="button"
+              className="auth-link"
+              onClick={goToRegister}
+              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+            >
+              Register /
+            </button>
+            <button
+              type="button"
+              className="auth-link"
+              onClick={goToLogin}
+              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+            >
+              Login
+            </button>
           </div>
         </div>
       </header>
+
       <main className="main">
         <div className="hero-section">
           <div className="hero-content">
@@ -305,25 +310,21 @@ function App() {
               </h1>
               <p className="hero-subtitle">— ALL IN ONE TAIL-WAGGING PLACE.</p>
             </div>
+
             <div className="hero-visual">
               <div className="background-circles">
                 <div className="purple-circle"></div>
                 <div className="dashed-circle"></div>
               </div>
+
               <div className="main-pet-image">
-                <img
-                  src={FirstDog}
-                  alt="Adorable puppy"
-                  className="puppy-image"
-                />
+                <img src={FirstDog} alt="Adorable puppy" className="puppy-image" />
               </div>
+
               <div className="orange-cat">
-                <img
-                  src={OrangeCat}
-                  alt="Orange cat"
-                  className="cat-image"
-                />
+                <img src={OrangeCat} alt="Orange cat" className="cat-image" />
               </div>
+
               <div
                 className="pet-card tiny-card"
                 onMouseEnter={handleCardMouseEnter}
@@ -345,6 +346,7 @@ function App() {
                   <div className="progress-fill"></div>
                 </div>
               </div>
+
               <div
                 className="pet-card mark-card"
                 onMouseEnter={handleCardMouseEnter}
@@ -366,6 +368,7 @@ function App() {
                   <div className="progress-fill"></div>
                 </div>
               </div>
+
               <div className="floating-heart" onClick={handleHeartClick}>
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
                   <circle cx="15" cy="15" r="15" fill="#EF4444" />
@@ -375,6 +378,7 @@ function App() {
             </div>
           </div>
         </div>
+
         {/* What We Offer Section */}
         <WhatWeOffer />
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // ✅ routing
+import Navbar from "./Navbar";  
 import petsImage from '../Assets/pets.png';
 import FirstDog from '../Assets/FirstDog.png';
 import OrangeCat from '../Assets/OrangeCat.png';
@@ -244,8 +245,8 @@ function App() {
         @keyframes wiggle { 0%,7%,14%,21%,28%,35%,42%,49%,56%,63%,70%,77%,84%,91%,98%,100%{transform:rotate(0deg);}3.5%,10.5%,17.5%,24.5%,31.5%,38.5%,45.5%,52.5%,59.5%,66.5%,73.5%,80.5%,87.5%,94.5%{transform:rotate(-3deg);} }
         .header { transition: transform 0.3s ease; transform: translateY(${headerVisible ? '0' : '-100%'}); }
       `}</style>
-
-      <header className="header">
+      <Navbar /> 
+      {/*<header className="header">
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
@@ -279,7 +280,7 @@ function App() {
               </svg>
             </button>
 
-            {/* ✅ Register -> /register, Login -> /login */}
+           
             <button
               type="button"
               className="auth-link"
@@ -299,6 +300,7 @@ function App() {
           </div>
         </div>
       </header>
+      */}
 
       <main className="main">
         <div className="hero-section">

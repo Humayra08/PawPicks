@@ -179,7 +179,12 @@ function ServicePage() {
       <section className="offer-root">
         <h2 className="offer-title">WHAT WE OFFER <span className="paw-icon">🐾</span></h2>
         <p className="offer-desc">
-          Comprehensive services to keep your pets happy and healthy: grooming, vet check-ups, training programs, and boarding facilities.
+         At our pet care center, we offer a comprehensive range of services to keep your pets happy and healthy. 
+          From grooming and bathing to ensure their look and feel their best, to veterinary check-ups and vaccinations 
+          for their health and safety, we cover all your pet’s needs. We also provide specialized training programs to 
+          help with behavior and obedience, as well as luxurious boarding facilities for when you’re away. 
+          Our dedicated team is passionate about providing the highest level of care and love for your furry friends, 
+          treating them as if they were our own.
         </p>
 
         {offerCards.map(({ num, title, desc, img }, idx) => (

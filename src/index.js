@@ -7,6 +7,7 @@ import Login from './Components/Login.jsx';
 import Registration from './Components/Registration.jsx'; // ✅ new
 import ServicePage from './Components/ServicePage.jsx';
 import reportWebVitals from './reportWebVitals.js';
+import Shop from './Components/Shop.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,7 +19,7 @@ root.render(
         <Route path="/services" element={<ServicePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} /> {/* ✅ */}
-        
+        <Route path="/shop" element={<Shop />} />
 
       </Routes>
     </BrowserRouter>

@@ -1,0 +1,263 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import doctorImg from "../Assets/doctor.png";
+import doggosImg from "../Assets/doggos.png";
+import dogImg from "../Assets/dog.png";
+import doggoImg from "../Assets/doggo.png";
+import doggyImg from "../Assets/doggy.png";
+import FooterLogoImg from '../Assets/logo.png';
+import LastDog from '../Assets/LastDog.png';
+import Last from '../Assets/Last.png';
+
+import img1 from "../Assets/1.png";
+import img2 from "../Assets/2.png";
+import img3 from "../Assets/3.png";
+import img4 from "../Assets/4.png";
+import img5 from "../Assets/5.png";
+import img6 from "../Assets/6.png";
+
+import '../ServicePage.css';
+
+const serviceCards = [
+  { title: "Physical checkup your pet", desc: "Regular physical checkups are essential for your pet’s health.", img: dogImg },
+  { title: "Spa", desc: "Our pet spa offers a luxurious and relaxing experience for your furry friends.", img: doggoImg },
+  { title: "Environmental Consulting", desc: "Advice for creating a healthy environment for your pets.", img: doggyImg },
+];
+
+const offerCards = [
+  { num: 1, title: "Group Training", desc: "Our Group Training sessions help dogs learn commands in a social setting.", img: img1 },
+  { num: 2, title: "Puppy Training", desc: "Focus on foundational skills like potty training and basic commands.", img: img2 },
+  { num: 3, title: "Private Training", desc: "One-on-one attention with customized training plans.", img: img3 },
+  { num: 4, title: "Specialty Program", desc: "Unique programs for agility training or behavior correction.", img: img4 },
+  { num: 5, title: "Virtual Training", desc: "Train your pet remotely with expert guidance.", img: img5 },
+  { num: 6, title: "Security Program", desc: "Focused on protection and safety for your pet.", img: img6 },
+];
+
+function ServicePage() {
+  const [formData, setFormData] = useState({ fullName: "", phoneNumber: "", email: "" });
+  const [activeNavLink, setActiveNavLink] = useState('Service');
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const navigate = useNavigate();
+  const goToLogin = (e) => { e?.preventDefault?.(); navigate('/login'); };
+  const goToRegister = (e) => { e?.preventDefault?.(); navigate('/register'); };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setHeaderVisible(false);
+      } else {
+        setHeaderVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
+  const handleNavClick = (linkName, e) => {
+    e.preventDefault();
+    setActiveNavLink(linkName);
+    if (linkName === "About") navigate("/");
+    else if (linkName === "Service") navigate("/services");
+  };
+
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = e => { e.preventDefault(); console.log("Form submitted:", formData); };
+  const handleRefresh = () => setFormData({ fullName: "", phoneNumber: "", email: "" });
+
+  const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
+
+  return (
+    <div className="service-page">
+      <style>{`
+        .header { transition: transform 0.3s ease; transform: translateY(${headerVisible ? '0' : '-100%'}); }
+      `}</style>
+
+      {/* Navbar */}
+      <header className="header">
+        <div className="nav-container">
+          <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
+            <span className="navbar-logo-text">PawPicks</span>
+          </div>
+
+          <nav className="nav-menu">
+            {navItems.map((item) => (
+              <a
+                key={item}
+                href="#"
+                className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
+                onClick={(e) => handleNavClick(item, e)}
+              >
+                {item}
+              </a>
+            ))}
+          </nav>
+
+          <div className="nav-actions">
+            <button className="notification-btn" aria-label="Notifications">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
+                <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
+              </svg>
+            </button>
+
+            <button className="cart-btn" aria-label="Cart">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              className="auth-link"
+              onClick={goToRegister}
+              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+            >
+              Register /
+            </button>
+            <button
+              type="button"
+              className="auth-link"
+              onClick={goToLogin}
+              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <div className="service-main">
+        <div className="service-hero-row">
+          <div className="service-hero-left">
+            <div className="service-title-left">LOVE AND ATTENTION</div>
+            <div className="service-title-green-left">FOR YOUR FURRY FRIENDS</div>
+            <div className="service-desc-left">
+              Welcome to our pet care service,<br />where your pets receive top-notch care and endless love
+            </div>
+          </div>
+          <div className="service-hero-right">
+            <svg viewBox="0 0 600 400" width="600" height="400">
+              <circle cx="370" cy="220" r="160" stroke="#CBAFF9" strokeWidth="8" fill="none" />
+              <circle cx="370" cy="220" r="110" stroke="#EAD8FC" strokeWidth="5" fill="none" />
+              <circle cx="370" cy="220" r="60" stroke="#EAD8FC" strokeWidth="3" fill="none" />
+            </svg>
+            <img src={doggosImg} alt="Group of Dogs" className="service-doggos-img-right" />
+            <div className="doctor-card-middle-right">
+              <img src={doctorImg} alt="Doctor Jane" className="doctor-pic" />
+              <div className="doctor-info">
+                <span className="doctor-name">dr.Jane</span>
+                <span className="doctor-rating">1k+ ★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Service Cards */}
+        <div className="service-cards-row">
+          {serviceCards.map(({ title, desc, img }, idx) => (
+            <div key={idx} className="service-card">
+              <div className="service-card-title">{title}</div>
+              <div className="service-card-desc">{desc}</div>
+              <button className="service-card-btn">Read More</button>
+              <img src={img} alt={title} className="service-card-img" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* WHAT WE OFFER */}
+      <section className="offer-root">
+        <h2 className="offer-title">WHAT WE OFFER <span className="paw-icon">🐾</span></h2>
+        <p className="offer-desc">
+         At our pet care center, we offer a comprehensive range of services to keep your pets happy and healthy. 
+          From grooming and bathing to ensure their look and feel their best, to veterinary check-ups and vaccinations 
+          for their health and safety, we cover all your pet’s needs. We also provide specialized training programs to 
+          help with behavior and obedience, as well as luxurious boarding facilities for when you’re away. 
+          Our dedicated team is passionate about providing the highest level of care and love for your furry friends, 
+          treating them as if they were our own.
+        </p>
+
+        {offerCards.map(({ num, title, desc, img }, idx) => (
+          <div key={idx} className={`offer-row ${idx % 2 !== 0 ? "reverse" : ""}`}>
+            <div className="offer-text">
+              <h3><span className="offer-number">{num}</span> {title}</h3>
+              <p>{desc}</p>
+            </div>
+            <div className="offer-img">
+              <img src={img} alt={title} />
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Contact */}
+      <section className="contact-root">
+        <div className="contact-main">
+          <div className="contact-left">
+            <h2 className="contact-title">CONTACT WITH US <span className="paw-icon">🐾</span></h2>
+            <form className="contact-form" onSubmit={handleSubmit}>
+              {["fullName", "phoneNumber", "email"].map((field, idx) => (
+                <input
+                  key={idx}
+                  type={field === "email" ? "email" : field === "phoneNumber" ? "tel" : "text"}
+                  name={field}
+                  placeholder={field.replace(/([A-Z])/g, " $1")}
+                  value={formData[field]}
+                  onChange={handleInputChange}
+                  className="contact-input"
+                />
+              ))}
+              <div className="contact-btn-group">
+                <button type="submit" className="contact-submit-btn">Submit</button>
+                <button type="button" className="contact-refresh-btn" onClick={handleRefresh}>Refresh</button>
+              </div>
+            </form>
+          </div>
+
+          <div className="contact-right">
+            <div className="circle-image-wrapper">
+              <div className="contact-circle"><div className="contact-circle-inner"></div></div>
+              <img src={LastDog} alt="Dog and Cat" className="circle-main-image" />
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="contact-footer">
+          <div className="contact-footer-left">
+            <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
+            <p className="footer-desc">Welcome to Cuddle & Care Pets! Quality care for your furry friends.</p>
+          </div>
+          <div className="contact-footer-center">
+            <div className="footer-polaroid">
+              <div className="footer-polaroid-frame">
+                <img src={Last} alt="Dog" className="footer-dog-img" />
+              </div>
+              <div className="footer-polaroid-dash"></div>
+            </div>
+          </div>
+          <div className="contact-footer-right">
+            <div className="footer-col">
+              <div className="footer-col-title">Website</div>
+              <ul>
+                {["About", "Service", "Discovery", "Shop", "Contact"].map((item, idx) => <li key={idx}>{item}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export default ServicePage;

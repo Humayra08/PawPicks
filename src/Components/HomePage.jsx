@@ -207,6 +207,11 @@ function App() {
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
+    if (linkName === "About") {
+      navigate("/"); // homepage
+    } else if (linkName === "Service") {
+      navigate("/services"); // service page
+    }
   };
 
   const handleCardMouseEnter = (e) => {

@@ -13,6 +13,14 @@ import Food6 from '../Assets/Food6.png';
 import Food7 from '../Assets/Food7.png';
 import Food8 from '../Assets/Food8.png';
 import Frame from '../Assets/Frame.png';
+import Toy1 from '../Assets/Toy1.png';
+import Toy2 from '../Assets/Toy2.png';
+import Toy3 from '../Assets/Toy3.png';
+import Toy4 from '../Assets/Toy4.png';
+import Toy5 from '../Assets/Toy5.png';
+import Toy6 from '../Assets/Toy6.png';
+import Toy7 from '../Assets/Toy7.png';
+import Toy8 from '../Assets/Toy8.png';
 
 const products = [
   {
@@ -21,7 +29,7 @@ const products = [
     rating: 5.0,
     sold: "1000+ Sold",
     price: "$100.00",
-    highlight: true, // Only first product highlighted for demo
+    highlight: true,
   },
   {
     img: Food2,
@@ -81,9 +89,79 @@ const products = [
   },
 ];
 
+const toys = [
+  {
+    img: Toy1,
+    title: "DOG TOYS TO MOUTH",
+    rating: 5.0,
+    sold: "1000+ Sold",
+    price: "$320.00",
+    highlight: true,
+  },
+  {
+    img: Toy2,
+    title: "BASKETBALL AND FOOTBALL TOY",
+    rating: 4.0,
+    sold: "329 Sold",
+    price: "$300.00",
+    highlight: true,
+  },
+  {
+    img: Toy3,
+    title: "BONE SHAPED PET TOYS",
+    rating: 4.5,
+    sold: "900 Sold",
+    price: "$700.00",
+    highlight: true,
+  },
+  {
+    img: Toy4,
+    title: "BALL FOR DOG",
+    rating: 3.0,
+    sold: "12 Sold",
+    price: "$300.00",
+    highlight: true,
+  },
+  {
+    img: Toy5,
+    title: "TAMAGOTCHI TOY DIGITAL",
+    rating: 5.0,
+    sold: "1000+ Sold",
+    price: "$600.00",
+    highlight: true,
+  },
+  {
+    img: Toy6,
+    title: "STUFFED ANIMALS & CUTE PET TOYS",
+    rating: 4.0,
+    sold: "329 Sold",
+    price: "$700.00",
+    highlight: true,
+  },
+  {
+    img: Toy7,
+    title: "MOSCOW AMAZON.COM TOY",
+    rating: 4.5,
+    sold: "900 Sold",
+    price: "$800.00",
+    highlight: true,
+  },
+  {
+    img: Toy8,
+    title: "DOG TOYS RAWHIDE PET TOY",
+    rating: 3.0,
+    sold: "12 Sold",
+    price: "$190.00",
+    highlight: true,
+  },
+];
+
 function Shop() {
   const [activeNavLink, setActiveNavLink] = useState('Shop');
-  const [favorites, setFavorites] = useState(Array(products.length).fill(false));
+  // combine favorites for both food and toy sections
+  const [favorites, setFavorites] = useState(
+    Array(products.length + toys.length).fill(false)
+  );
   const navigate = useNavigate();
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
@@ -106,6 +184,49 @@ function Shop() {
       return updated;
     });
   };
+
+  const renderProductCard = (product, idx, offset = 0) => (
+    <div className="shop-product-card" key={product.title}>
+      <button
+        className="shop-product-fav"
+        aria-label="Favorite"
+        onClick={() => handleFavClick(idx + offset)}
+        type="button"
+      >
+        <span style={{
+          color: favorites[idx + offset] ? '#F43F5E' : '#D1D5DB',
+          fontSize: '1.4rem',
+          transition: 'color .13s'
+        }}>♡</span>
+      </button>
+      <div className="shop-product-img-wrap">
+        <img src={product.img} alt={product.title} className="shop-product-img" />
+      </div>
+      <div className={`shop-product-details${product.highlight ? " highlight" : ""}`}>
+        <div className="shop-product-title">{product.title}</div>
+        <div className="shop-product-meta">
+          <span className="shop-product-rating">
+            <span style={{ color: '#FACC15', fontSize: '1.1rem', marginRight: '3px' }}>★</span>
+            {product.rating}
+          </span>
+          <span className="shop-product-sold">{product.sold}</span>
+        </div>
+        <div className="shop-product-prices">
+          <span className="shop-product-price">{product.price}</span>
+        </div>
+        <div className="shop-product-actions">
+          <button className="shop-product-buy">Buy Now</button>
+          <button className="shop-product-cart" aria-label="Add to cart">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M6 6h15l-1.5 9h-13z" stroke="#421F72" strokeWidth="1.5" fill="none"/>
+              <circle cx="9" cy="20" r="1" fill="#421F72"/>
+              <circle cx="18" cy="20" r="1" fill="#421F72"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="pet-care-app">
@@ -200,51 +321,20 @@ function Shop() {
               PET FOOD <span className="shop-products-paw">🐾</span>
             </h2>
             <div className="shop-products-grid">
-              {products.map((product, idx) => (
-                <div className="shop-product-card" key={product.title}>
-                  <button
-                    className="shop-product-fav"
-                    aria-label="Favorite"
-                    onClick={() => handleFavClick(idx)}
-                    type="button"
-                  >
-                    <span style={{
-                      color: favorites[idx] ? '#F43F5E' : '#D1D5DB',
-                      fontSize: '1.4rem',
-                      transition: 'color .13s'
-                    }}>♡</span>
-                  </button>
-                  <div className="shop-product-img-wrap">
-                    <img src={product.img} alt={product.title} className="shop-product-img" />
-                  </div>
-                  <div className={`shop-product-details${product.highlight ? " highlight" : ""}`}>
-                    <div className="shop-product-title">{product.title}</div>
-                    <div className="shop-product-meta">
-                      <span className="shop-product-rating">
-                        <span style={{ color: '#FACC15', fontSize: '1.1rem', marginRight: '3px' }}>★</span>
-                        {product.rating}
-                      </span>
-                      <span className="shop-product-sold">{product.sold}</span>
-                    </div>
-                    <div className="shop-product-prices">
-                      <span className="shop-product-price">{product.price}</span>
-                    </div>
-                    <div className="shop-product-actions">
-                      <button className="shop-product-buy">Buy Now</button>
-                      <button className="shop-product-cart" aria-label="Add to cart">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                          <path d="M6 6h15l-1.5 9h-13z" stroke="#421F72" strokeWidth="1.5" fill="none"/>
-                          <circle cx="9" cy="20" r="1" fill="#421F72"/>
-                          <circle cx="18" cy="20" r="1" fill="#421F72"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              {products.map((product, idx) => renderProductCard(product, idx))}
             </div>
             <div className="shop-products-frame">
               <img src={Frame} alt="Frame" className="shop-frame-img" />
+            </div>
+          </section>
+
+          {/* --- PET TOY GRID --- */}
+          <section className="shop-products-section">
+            <h2 className="shop-products-title center" style={{ marginTop: '42px' }}>
+              PET TOY <span className="shop-products-paw">🐾</span>
+            </h2>
+            <div className="shop-products-grid">
+              {toys.map((toy, idx) => renderProductCard(toy, idx, products.length))}
             </div>
           </section>
         </section>

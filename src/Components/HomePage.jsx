@@ -36,6 +36,43 @@ function WhatWeOffer() {
   );
 }
 
+function HomeFooter() {
+  return (
+    <footer className="contact-footer">
+      <div className="contact-footer-left">
+        <div className="footer-logo">
+          <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
+        </div>
+        <div className="footer-desc">
+          Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
+        </div>
+      </div>
+      <div className="contact-footer-center">
+        <div className="footer-polaroid">
+          <div className="footer-polaroid-frame">
+            <img src={Last} alt="Dog" className="footer-dog-img" />
+          </div>
+          <div className="footer-polaroid-dash"></div>
+        </div>
+      </div>
+      <div className="contact-footer-right">
+        <div className="footer-cols">
+          <div className="footer-col">
+            <div className="footer-col-title">Website</div>
+            <ul>
+              <li>About</li>
+              <li>Service</li>
+              <li>Discovery</li>
+              <li>Shop</li>
+              <li>Contact</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 function ContactSection() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -120,39 +157,8 @@ function ContactSection() {
             </div>
           </div>
         </div>
-        {/* Light purple footer is placed here, directly below contact-main */}
-        <footer className="contact-footer">
-          <div className="contact-footer-left">
-            <div className="footer-logo">
-              <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
-            </div>
-            <div className="footer-desc">
-              Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
-            </div>
-          </div>
-          <div className="contact-footer-center">
-            <div className="footer-polaroid">
-              <div className="footer-polaroid-frame">
-                <img src={Last} alt="Dog" className="footer-dog-img" />
-              </div>
-              <div className="footer-polaroid-dash"></div>
-            </div>
-          </div>
-          <div className="contact-footer-right">
-            <div className="footer-cols">
-              <div className="footer-col">
-                <div className="footer-col-title">Website</div>
-                <ul>
-                  <li>About</li>
-                  <li>Service</li>
-                  <li>Discovery</li>
-                  <li>Shop</li>
-                  <li>Contact</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </footer>
+        {/* Footer for homepage (now matches Shop page) */}
+        <HomeFooter />
       </div>
     </section>
   );

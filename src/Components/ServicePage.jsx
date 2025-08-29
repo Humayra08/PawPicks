@@ -62,6 +62,7 @@ function ServicePage() {
     setActiveNavLink(linkName);
     if (linkName === "About") navigate("/");
     else if (linkName === "Service") navigate("/services");
+    else if (linkName === "Shop") navigate("/shop");
   };
 
   const handleInputChange = e => {
@@ -233,28 +234,38 @@ function ServicePage() {
         </div>
 
         {/* Footer */}
-        <div className="contact-footer">
-          <div className="contact-footer-left">
+         <footer className="contact-footer">
+        <div className="contact-footer-left">
+          <div className="footer-logo">
             <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
-            <p className="footer-desc">Welcome to Cuddle & Care Pets! Quality care for your furry friends.</p>
           </div>
-          <div className="contact-footer-center">
-            <div className="footer-polaroid">
-              <div className="footer-polaroid-frame">
-                <img src={Last} alt="Dog" className="footer-dog-img" />
-              </div>
-              <div className="footer-polaroid-dash"></div>
+          <div className="footer-desc">
+            Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
+          </div>
+        </div>
+        <div className="contact-footer-center">
+          <div className="footer-polaroid">
+            <div className="footer-polaroid-frame">
+              <img src={Last} alt="Dog" className="footer-dog-img" />
             </div>
+            <div className="footer-polaroid-dash"></div>
           </div>
-          <div className="contact-footer-right">
+        </div>
+        <div className="contact-footer-right">
+          <div className="footer-cols">
             <div className="footer-col">
               <div className="footer-col-title">Website</div>
               <ul>
-                {["About", "Service", "Discovery", "Shop", "Contact"].map((item, idx) => <li key={idx}>{item}</li>)}
+                <li>About</li>
+                <li>Service</li>
+                <li>Discovery</li>
+                <li>Shop</li>
+                <li>Contact</li>
               </ul>
             </div>
           </div>
         </div>
+      </footer>
       </section>
     </div>
   );

@@ -3,8 +3,11 @@
   background: #f5eafd;
   min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column; /* Keeps the footer at the bottom */
 }
 
+/* Header (no change) */
 .header {
   padding: 1rem 2rem;
   background: rgba(255, 255, 255, 0.9);
@@ -21,6 +24,7 @@
   transform: translateY(0);
 }
 
+/* Navigation (no change) */
 .nav-container {
   display: flex;
   align-items: center;
@@ -349,13 +353,24 @@
   transition: transform 0.3s ease;
 }
 
-.offer-row.reverse { flex-direction: row-reverse; }
+.offer-row.reverse {
+  flex-direction: row-reverse;
+}
 
-.offer-row:hover { transform: translateY(-4px); }
+.offer-row:hover {
+  transform: translateY(-4px);
+}
 
-.offer-text { flex: 1; padding: 20px; }
+.offer-text {
+  flex: 1;
+  padding: 20px;
+}
 
-.offer-text h3 { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
+.offer-text h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 
 .offer-number {
   display: inline-block;
@@ -370,7 +385,10 @@
   font-size: 0.9rem;
 }
 
-.offer-img { flex: 1; text-align: center; }
+.offer-img {
+  flex: 1;
+  text-align: center;
+}
 
 .offer-img img {
   width: 100%;
@@ -379,81 +397,189 @@
   transition: transform 0.3s ease;
 }
 
-.offer-img img:hover { transform: scale(1.05); }
-
-/* ====== CONTACT ====== */
-.contact-root { background: #f9f9f9; padding: 50px 20px; }
-
-.contact-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+.offer-img img:hover {
+  transform: scale(1.05);
 }
-
-.contact-left { flex: 1; min-width: 280px; }
-
-.contact-title { font-size: 1.8rem; font-weight: bold; margin-bottom: 20px; }
-
-.contact-form { display: flex; flex-direction: column; }
-
-.contact-input {
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  transition: border 0.3s;
-}
-
-.contact-input:focus { border-color: #6a1b9a; outline: none; }
-
-.contact-btn-group { display: flex; gap: 10px; }
-
-.contact-submit-btn, .contact-refresh-btn {
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.contact-submit-btn {
-  background: #6a1b9a;
-  color: #fff;
-}
-
-.contact-submit-btn:hover { transform: scale(1.05); }
-
-.contact-refresh-btn { background: #eee; }
-
-.contact-refresh-btn:hover { background: #ddd; transform: scale(1.05); }
 
 /* ====== FOOTER ====== */
 .contact-footer {
+  width: 100%;
+  background: #ece3fa;
+  padding: 0;
+  margin: 0;
+  margin-top: auto; /* Stick to bottom */
+  border-top-left-radius: 120px 60px;
+  border-top-right-radius: 120px 60px;
+  min-height: 320px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-top: 50px;
-  flex-wrap: wrap;
+  align-items: flex-end;
+  position: relative;
+  z-index: 1;
 }
 
-.footer-logo-img { max-width: 120px; margin-bottom: 10px; }
+.contact-footer-left,
+.contact-footer-center,
+.contact-footer-right {
+  flex: 1;
+  padding: 3rem 2vw 2rem 5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.contact-footer-center {
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.footer-logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
 
 .footer-desc {
-  font-size: 0.9rem;
-  color: #555;
-  max-width: 300px;
+  color: #421F72;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  max-width: 260px;
+}
+
+.footer-polaroid {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .footer-polaroid-frame {
-  border: 6px solid #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s ease;
+  width: 160px;
+  height: 190px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(68,34,106,0.10);
+  padding: 10px;
+  transform: rotate(8deg);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.footer-polaroid-frame:hover { transform: scale(1.05); }
+.footer-dog-img {
+  width: 140px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #d8f1e1;
+}
 
-.footer-dog-img { width: 100px; display: block; }
+.footer-polaroid-dash {
+  position: absolute;
+  top: -20px;
+  left: -12px;
+  width: 186px;
+  height: 200px;
+  border: 2px dashed #a68bcf;
+  border-radius: 18px;
+  z-index: 1;
+}
+
+.contact-footer-right {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.footer-cols {
+  padding-right: 5rem;
+  display: flex;
+  gap: 2.5rem;
+}
+
+.footer-col-title {
+  font-weight: 600;
+  color: #421F72;
+  margin-bottom: 1rem;
+  font-size: 1.07rem;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col li {
+  color: #421F72;
+  font-size: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+/* ====== MEDIA QUERIES ====== */
+@media (max-width: 900px) {
+  .service-page {
+    flex-direction: column; /* Ensure the page layout still allows footer to be pushed down */
+  }
+
+  .contact-footer {
+    flex-direction: column;
+    align-items: center;
+    border-top-left-radius: 70px 30px;
+    border-top-right-radius: 70px 30px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .contact-footer-left, .contact-footer-center, .contact-footer-right {
+    padding: 2rem 2vw;
+    width: 100%;
+    align-items: center;
+  }
+
+  .footer-polaroid {
+    margin: 2rem 0;
+  }
+
+  .footer-cols {
+    justify-content: center;
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .offer-circles {
+    width: 350px;
+    height: 350px;
+  }
+  .circle1 { width: 300px; height: 300px; }
+  .circle2 { width: 200px; height: 200px; }
+  .circle3 { width: 100px; height: 100px; }
+  .offer-title-top { font-size: 0.9rem; margin-top: 10px;}
+  .offer-section::after {
+    height: 36px;
+    clip-path: polygon(0 95%, 50% 100%, 100% 95%, 100% 100%, 0 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .service-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+}
+
+.nav-link:focus,
+.contact-submit-btn:focus,
+.contact-refresh-btn:focus {
+  outline: none;  
+  border: none;  
+}

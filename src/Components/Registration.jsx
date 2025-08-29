@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import FooterLogoImg from "../Assets/logo.png";
 import OrangeCat from "../Assets/OrangeCat.png";
 import Last from "../Assets/Last.png";
+import axios from 'axios';
 
 const COUNTRY_CODES = [
-  { code: "IN", name: "India",       dial: "+91" },
-  { code: "CN", name: "China",       dial: "+86" },
-  { code: "BD", name: "Bangladesh",  dial: "+880" },
-  { code: "PK", name: "Pakistan",    dial: "+92" },
-  { code: "ID", name: "Indonesia",   dial: "+62" },
+  { code: "IN", name: "India", dial: "+91" },
+  { code: "CN", name: "China", dial: "+86" },
+  { code: "BD", name: "Bangladesh", dial: "+880" },
+  { code: "PK", name: "Pakistan", dial: "+92" },
+  { code: "ID", name: "Indonesia", dial: "+62" },
 ];
 
 export default function Registration() {
@@ -44,7 +45,7 @@ export default function Registration() {
   };
 
   const goToRegister = (e) => { e.preventDefault(); navigate("/register"); };
-  const goToLogin    = (e) => { e.preventDefault(); navigate("/login"); };
+  const goToLogin = (e) => { e.preventDefault(); navigate("/login"); };
 
   // form state
   const [form, setForm] = useState({
@@ -54,7 +55,6 @@ export default function Registration() {
     repassword: "",
   });
 
-
   const [dialCode, setDialCode] = useState("+880");
 
   const onChange = (e) => {
@@ -62,9 +62,37 @@ export default function Registration() {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent the form from submitting normally
+     console.log("Form data:", form);
+
+    // Ensure passwords match
+    if (form.password !== form.repassword) {
+      alert("Passwords do not match.");
+      return; // Don't submit the form if passwords don't match
+    }
+
+    const phoneWithCode = dialCode + form.phone; // Combine phone number with country code
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/users/register", {
+        fullName: form.fullname,
+        phoneNumber: phoneWithCode, // Send phone number with country code
+        password: form.password,
+        rePassword: form.repassword,
+      });
+
+      console.log("Registration successful:", response.data);
+      navigate("/login"); // Redirect user to login page
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert("Registration failed. Please try again.");
+    }
+  };
+
   return (
     <div className="registration-page">
-    
+      {/* NAVBAR */}
       <header className={`header ${headerVisible ? "visible" : "hidden"}`}>
         <div className="nav-container">
           <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -110,17 +138,16 @@ export default function Registration() {
         </div>
       </header>
 
-      {/* BODY: centered two-column layout */}
+      {/* BODY */}
       <main className="register-root">
         <div className="register-container">
-         
           <section className={`register-form-card ${formIn ? "slide-in-right" : ""}`}>
             <div className="register-head">
               <div className="register-title">REGISTER</div>
               <span className="register-paw">🐾</span>
             </div>
 
-            <form className="register-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="register-form" onSubmit={handleSubmit}>
               {/* Full name */}
               <label className="register-label">Full name</label>
               <input
@@ -132,6 +159,7 @@ export default function Registration() {
                 onChange={onChange}
               />
 
+              {/* Phone number */}
               <label className="register-label">Phone number</label>
               <div className="register-input input-with-prefix select-dial">
                 <select
@@ -176,7 +204,6 @@ export default function Registration() {
                 onChange={onChange}
               />
 
-              {/* Stepper dots (decorative) */}
               <div className="register-stepper">
                 <span className="dot active" />
                 <span className="dot" />
@@ -187,9 +214,9 @@ export default function Registration() {
               </button>
 
               <div className="register-muted">
-                Already have account?
+                Already have an account?{" "}
                 <button type="button" className="register-link" onClick={goToLogin}>
-                  {" "}Login Here
+                  Login Here
                 </button>
               </div>
 
@@ -220,7 +247,7 @@ export default function Registration() {
               <img src={OrangeCat} alt="Cute pets" className="register-hero-img" />
             </div>
 
-            {/* translucent info card at the bottom */}
+            {/* Translucent info card */}
             <div className="register-benefit-card">
               <div className="benefit-title">
                 Member Benefits: Exclusive Discounts, Rewards
@@ -236,7 +263,6 @@ export default function Registration() {
         </div>
       </main>
 
-     
       <footer className="contact-footer">
         <div className="contact-footer-left">
           <div className="footer-logo">

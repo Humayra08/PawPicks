@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-
+import axios from 'axios'; 
 import FooterLogoImg from "../Assets/logo.png";
 import FirstDog from "../Assets/FirstDog.png";
 import avatar1 from "../Assets/avatar1.png";
@@ -14,7 +13,7 @@ export default function Login() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // slide-in state for the form card
+  // Slide-in state for the form card
   const [formIn, setFormIn] = useState(false);
 
   const navigate = useNavigate();
@@ -40,24 +39,37 @@ export default function Login() {
     setActiveNavLink(linkName);
   };
 
-  const goToRegister = (e) => {
-    e.preventDefault();
-    navigate("/register");
-  };
-  const goToLogin = (e) => {
-    e.preventDefault();
-    navigate("/login");
-  };
+  const goToRegister = (e) => { e.preventDefault(); navigate("/register"); };
+  const goToLogin = (e) => { e.preventDefault(); navigate("/login"); };
 
   const [form, setForm] = useState({
     fullname: "",
     password: "",
-    remember: false,
   });
 
   const onChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();  // Prevent the form from submitting normally
+
+    try {
+      // Send POST request to backend API for login
+      const response = await axios.post("http://localhost:5000/api/users/login", {
+        fullName: form.fullname, // Only send full name
+        password: form.password, // Send password
+      });
+
+      // Handle successful login
+      console.log("Login successful:", response.data);
+      // Navigate to dashboard or home page
+      navigate("/dashboard"); 
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials.");
+    }
   };
 
   return (
@@ -125,7 +137,7 @@ export default function Login() {
               your pet needs to stay happy and healthy.
             </p>
 
-            <form className="login-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="login-form" onSubmit={handleSubmit}>
               <label className="login-label">Full Name</label>
               <input
                 className="login-input"
@@ -146,17 +158,6 @@ export default function Login() {
                 onChange={onChange}
               />
 
-              <div className="login-remember">
-                <input
-                  id="remember"
-                  type="checkbox"
-                  name="remember"
-                  checked={form.remember}
-                  onChange={onChange}
-                />
-                <label htmlFor="remember">Remember me</label>
-              </div>
-
               <button className="login-primary-btn" type="submit">
                 Log In
               </button>
@@ -164,23 +165,9 @@ export default function Login() {
               <div className="login-muted">
                 Don’t have an account?
                 <button type="button" className="login-link" onClick={goToRegister}>
-                  {" "}Register here
+                  Register here
                 </button>
               </div>
-
-              <div className="login-or">
-                <span className="login-or-line" />
-                <span className="login-or-text">Or</span>
-                <span className="login-or-line" />
-              </div>
-
-              <button type="button" className="login-social-btn">
-                <span>🔍</span> <span>Sign In With Google</span>
-              </button>
-
-              <button type="button" className="login-social-btn">
-                <span>💼</span> <span>Sign In With LinkedIn</span>
-              </button>
             </form>
           </section>
 
@@ -227,7 +214,6 @@ export default function Login() {
         </div>
       </main>
 
-      
       <footer className="contact-footer">
         <div className="contact-footer-left">
           <div className="footer-logo">

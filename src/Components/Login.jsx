@@ -1,3 +1,4 @@
+// src/Components/Login.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'; 
@@ -37,6 +38,9 @@ export default function Login() {
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
+    if (linkName === "About") navigate("/");
+    if (linkName === "Service") navigate("/services");
+    if (linkName === "Shop") navigate("/shop");
   };
 
   const goToRegister = (e) => { e.preventDefault(); navigate("/register"); };
@@ -52,25 +56,30 @@ export default function Login() {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  // ======== JWT-AWARE SUBMIT (ONLY LOGIC CHANGED) ========
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent the form from submitting normally
-
+    e.preventDefault();
     try {
-      // Send POST request to backend API for login
-      const response = await axios.post("http://localhost:5000/api/users/login", {
-        fullName: form.fullname, // Only send full name
-        password: form.password, // Send password
+      const res = await axios.post("http://localhost:5000/api/users/login", {
+        fullName: form.fullname,
+        password: form.password,
       });
 
-      // Handle successful login
-      console.log("Login successful:", response.data);
-      // Navigate to dashboard or home page
-      navigate("/dashboard"); 
+      // Expecting: { _id, fullName, phoneNumber, token }
+      const { token, ...user } = res.data || {};
+      if (token) {
+        localStorage.setItem("jwt", token);
+        localStorage.setItem("user", JSON.stringify(user)); // store basic info for initials
+        navigate("/profile");
+      } else {
+        alert("Login failed. No token returned.");
+      }
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      console.error("Login failed:", error?.response?.data || error);
+      alert(error?.response?.data?.message || "Login failed. Please check your credentials.");
     }
   };
+  // =======================================================
 
   return (
     <div className="login-page">
@@ -109,6 +118,7 @@ export default function Login() {
               </svg>
             </button>
 
+            {/* Do NOT change design; links remain visible here on the Login page */}
             <button type="button" className="auth-link" onClick={goToRegister}>
               Register /
             </button>
@@ -171,7 +181,7 @@ export default function Login() {
             </form>
           </section>
 
-          {/* RIGHT: teal box + dog + community card */}
+          {/* RIGHT visual */}
           <aside className="login-visual center-dog">
             <h2 className="login-right-title">
               HEALTHY PETS BRING JOY<br />AND ENRICH YOUR LIFE.

@@ -1,36 +1,20 @@
+// server/models/userModel.js
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
-  fullName: {
-    type: String,
-    required: true,
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-    unique: true,  // Enforces uniqueness on phoneNumber
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  googleId: {
-    type: String,
-    unique: true,
-    sparse: true, 
-  },
-  linkedinId: {
-    type: String,
-    unique: true,
-    sparse: true,  
-  },
+  fullName: { type: String, required: true },
+  phoneNumber: { type: String, required: true, unique: true },
+  email: { type: String, default: "" },       // added for profile editing
+  avatarUrl: { type: String, default: "" },   // added for profile photo
+  password: { type: String, required: true },
+  googleId: { type: String, unique: true, sparse: true },
+  linkedinId: { type: String, unique: true, sparse: true },
 }, { timestamps: true });
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();  // Only hash if the password is modified
-
+  if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();

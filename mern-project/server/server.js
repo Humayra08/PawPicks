@@ -1,38 +1,38 @@
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import connectDb from './db/connect.js';
 import userRoutes from './routes/userRoutes.js';
 
-dotenv.config();  // Load environment variables from .env
+dotenv.config();
 
 const app = express();
 
-// CORS Configuration
-const corsOptions = {
-  origin: 'http://localhost:3000',  // Allow requests from the frontend
-  methods: ['GET', 'POST'],  // Allow specific HTTP methods (GET, POST)
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow headers for Content-Type and Authorization (for JWT)
-  credentials: true,  // Allow credentials (cookies, etc.)
-};
+// ----- CORS (allow React dev server) -----
+app.use(cors({
+  origin: ['http://localhost:3000'],
+  credentials: true,
+}));
 
-app.use(cors(corsOptions));  // Apply CORS configuration
-app.use(express.json());  // Enable JSON parsing for incoming requests
+// Body parser
+app.use(express.json());
 
-// Connect to the database
+// DB
 connectDb();
 
+// Static files (serve uploaded avatars)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
-app.use('/api/users', userRoutes);  // User routes for login, registration, etc.
+app.use('/api/users', userRoutes);
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Welcome to the MERN backend!');
-});
+app.get('/', (req, res) => res.send('MERN backend is live'));
 
+// Start
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

@@ -1,175 +1,157 @@
-// src/Components/Profile.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+// client/src/Components/Profile.jsx
+import React, { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import FooterLogoImg from "../Assets/logo.png";
 import Last from "../Assets/Last.png";
 
-function getInitials(name = "") {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(part => part[0]?.toUpperCase() || "")
-    .join("");
-}
+// Utility to get initials
+const getInitials = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0]?.[0] || '';
+  const second = parts[1]?.[0] || '';
+  return (first + second).toUpperCase();
+};
 
 export default function Profile() {
   const navigate = useNavigate();
 
-  // Header/nav state (kept consistent with your pages)
-  const [activeNavLink, setActiveNavLink] = useState("About");
-  const [headerVisible, setHeaderVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const y = window.scrollY;
-      setHeaderVisible(!(y > lastScrollY && y > 100));
-      setLastScrollY(y);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  const navItems = ["About", "Service", "Discovery", "Shop", "Contact"];
-  const handleNavClick = (linkName, e) => {
-    e.preventDefault();
-    setActiveNavLink(linkName);
-    if (linkName === "About") navigate("/");
-    if (linkName === "Service") navigate("/services");
-    if (linkName === "Shop") navigate("/shop");
-  };
-
-  const jwt = localStorage.getItem("jwt");
-  const cachedUser = useMemo(() => {
-    try { return JSON.parse(localStorage.getItem("user") || "null"); }
-    catch { return null; }
-  }, []);
-
-  // Profile state
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [profile, setProfile] = useState({
-    fullName: cachedUser?.fullName || "",
-    phoneNumber: cachedUser?.phoneNumber || "",
-    email: "",             // initially blank until set
-    avatarUrl: "",         // initially blank until set
+  const [user, setUser] = useState({
+    fullName: '',
+    phoneNumber: '',
+    email: '',
+    avatarUrl: '',
   });
 
-  // Editing controls
-  const [editField, setEditField] = useState(null);
-  const [draft, setDraft] = useState("");
+  const [edit, setEdit] = useState({
+    fullName: false,
+    phoneNumber: false,
+    email: false,
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const jwt = localStorage.getItem('jwt');
 
   // Fetch profile on mount
   useEffect(() => {
     if (!jwt) {
-      navigate("/login");
+      navigate('/login');
       return;
     }
-    const fetchProfile = async () => {
+    (async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users/profile", {
+        const { data } = await axios.get('/api/users/profile', {
           headers: { Authorization: `Bearer ${jwt}` },
         });
-        setProfile({
-          fullName: res.data.fullName || "",
-          phoneNumber: res.data.phoneNumber || "",
-          email: res.data.email || "",
-          avatarUrl: res.data.avatarUrl || "",
+        setUser({
+          fullName: data.fullName || '',
+          phoneNumber: data.phoneNumber || '',
+          email: data.email || '',
+          avatarUrl: data.avatarUrl || '',
         });
       } catch (err) {
-        console.error(err);
-        if (err?.response?.status === 401) navigate("/login");
-        else setError(err?.response?.data?.message || "Failed to load profile");
+        console.error('Failed to load profile', err?.response?.data || err.message);
+        alert('Failed to load profile. Please login again.');
+        navigate('/login');
       } finally {
         setLoading(false);
       }
-    };
-    fetchProfile();
+    })();
   }, [jwt, navigate]);
 
-  const startEdit = (field) => {
-    setEditField(field);
-    setDraft(profile[field] || "");
-  };
-  const cancelEdit = () => {
-    setEditField(null);
-    setDraft("");
-  };
-  const saveEdit = async () => {
-    if (!editField) return;
+  const toggleEdit = (field) => setEdit((e) => ({ ...e, [field]: !e[field] }));
+
+  const saveProfile = async () => {
     try {
-      setSaving(true);
-      const updates = { [editField]: draft };
-      const res = await axios.put("http://localhost:5000/api/users/profile", updates, {
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      setProfile({
-        fullName: res.data.fullName || "",
-        phoneNumber: res.data.phoneNumber || "",
-        email: res.data.email || "",
-        avatarUrl: res.data.avatarUrl || "",
-      });
-      // also refresh localStorage basic info for initials/avatar in headers elsewhere
-      const basic = { _id: res.data._id, fullName: res.data.fullName, phoneNumber: res.data.phoneNumber };
-      localStorage.setItem("user", JSON.stringify(basic));
-      cancelEdit();
+      const { data } = await axios.put(
+        '/api/users/profile',
+        {
+          fullName: user.fullName,
+          phoneNumber: user.phoneNumber,
+          email: user.email,
+        },
+        { headers: { Authorization: `Bearer ${jwt}` } }
+      );
+      // update local user and localStorage
+      const updated = data.user;
+      setUser((u) => ({ ...u, ...updated }));
+      localStorage.setItem('user', JSON.stringify(updated));
+      alert('Profile saved');
+      setEdit({ fullName: false, phoneNumber: false, email: false });
     } catch (err) {
-      console.error(err);
-      alert(err?.response?.data?.message || "Failed to update profile");
-    } finally {
-      setSaving(false);
+      console.error('Update failed', err?.response?.data || err.message);
+      alert(err?.response?.data?.message || 'Failed to update profile');
     }
   };
 
-  const initials = useMemo(() => getInitials(profile.fullName), [profile.fullName]);
+  const onAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const form = new FormData();
+    form.append('avatar', file);
+
+    try {
+      setAvatarUploading(true);
+      const { data } = await axios.post('/api/users/profile/avatar', form, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setUser((u) => ({ ...u, avatarUrl: data.avatarUrl }));
+      const saved = JSON.parse(localStorage.getItem('user') || '{}');
+      localStorage.setItem('user', JSON.stringify({ ...saved, avatarUrl: data.avatarUrl }));
+    } catch (err) {
+      console.error('Avatar upload failed', err?.response?.data || err.message);
+      alert(err?.response?.data?.message || 'Failed to upload avatar');
+    } finally {
+      setAvatarUploading(false);
+      e.target.value = ''; // reset
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
+
+  // Navbar avatar/initials
+  const navUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const avatarBadge = navUser?.avatarUrl ? (
+    <img src={navUser.avatarUrl} alt="avatar" className="nav-avatar-img" />
+  ) : (
+    <div className="nav-avatar-initials">{getInitials(navUser?.fullName)}</div>
+  );
+
+  if (loading) return <div style={{ padding: 24 }}>Loading...</div>;
 
   return (
     <div className="profile-page">
-      {/* NAVBAR (same layout as your pages) */}
-      <header className={`header ${headerVisible ? "visible" : "hidden"}`}>
+      {/* NAVBAR (same structure, add right avatar) */}
+      <header className="header">
         <div className="nav-container">
-          <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px", cursor: "pointer" }} onClick={() => navigate("/")}>
+          <div className="logo" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
             <span className="navbar-logo-text">PawPicks</span>
           </div>
 
           <nav className="nav-menu">
-            {navItems.map((item) => (
-              <a
-                key={item}
-                href="#"
-                className={`nav-link ${activeNavLink === item ? "active" : ""}`}
-                onClick={(e) => handleNavClick(item, e)}
-              >
-                {item}
-              </a>
-            ))}
+            <Link className="nav-link" to="/">About</Link>
+            <Link className="nav-link" to="/services">Service</Link>
+            <a className="nav-link" href="#">Discovery</a>
+            <Link className="nav-link" to="/shop">Shop</Link>
+            <a className="nav-link" href="#footer">Contact</a>
           </nav>
 
           <div className="nav-actions">
-            {/* show avatar (image or initials) when logged in */}
-            {jwt ? (
-              <button
-                className="nav-avatar-btn"
-                aria-label="Profile"
-                onClick={() => navigate("/profile")}
-                title={profile.fullName || "Profile"}
-              >
-                {profile?.avatarUrl ? (
-                  <img className="nav-avatar-img" src={profile.avatarUrl} alt="avatar" />
-                ) : (
-                  <span className="nav-avatar-initials">{initials || "U"}</span>
-                )}
-              </button>
-            ) : (
-              <>
-                <button className="auth-link" onClick={() => navigate("/register")}>Register /</button>
-                <button className="auth-link" onClick={() => navigate("/login")}>Login</button>
-              </>
-            )}
+            <div className="nav-user-badge" title={user.fullName}>
+              {avatarBadge}
+            </div>
+            <button className="auth-link" onClick={logout}>Logout</button>
           </div>
         </div>
       </header>
@@ -177,145 +159,107 @@ export default function Profile() {
       {/* BODY */}
       <main className="profile-root">
         <div className="profile-container">
-          {/* Sidebar (like your demo image) */}
+          {/* Left: sidebar */}
           <aside className="profile-sidebar">
-            <div className="sidebar-title">Account</div>
-            <button className="sidebar-item active">
-              <span>👤</span>
-              <span>Profile</span>
-            </button>
-            <button className="sidebar-item">
-              <span>🛒</span>
-              <span>My Orders</span>
-            </button>
-            <button className="sidebar-item">
-              <span>🔔</span>
-              <span>Notifications</span>
-            </button>
-            <button className="sidebar-item">
-              <span>⬇️</span>
-              <span>Downloads</span>
-            </button>
+            <div className="profile-avatar-wrap">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt="User avatar" className="profile-avatar" />
+              ) : (
+                <div className="profile-initials">{getInitials(user.fullName)}</div>
+              )}
+
+              <label className="profile-upload-btn">
+                {avatarUploading ? 'Uploading...' : 'Upload Photo'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={onAvatarChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            </div>
+
+            <div className="profile-menu">
+              <button className="profile-menu-item active">My Information</button>
+              <button className="profile-menu-item">Orders</button>
+              <button className="profile-menu-item">Wishlist</button>
+              <button className="profile-menu-item">Settings</button>
+            </div>
           </aside>
 
-          {/* Main card */}
-          <section className="profile-main">
-            <div className="profile-card">
-              <div className="profile-card-head">
-                <div className="profile-avatar-stack">
-                  {profile?.avatarUrl ? (
-                    <img className="profile-avatar-img" src={profile.avatarUrl} alt="avatar" />
-                  ) : (
-                    <div className="profile-avatar-circle">{initials || "U"}</div>
-                  )}
-                  <button className="profile-change-photo" onClick={() => startEdit("avatarUrl")}>
-                    Change Photo
-                  </button>
-                </div>
-                <div className="profile-head-right">
-                  <div className="profile-name">{profile.fullName || "Your Name"}</div>
-                  <div className="profile-sub">{profile.email ? profile.email : "Add email"}</div>
-                </div>
+          {/* Right: info card */}
+          <section className="profile-card">
+            <div className="profile-card-header">
+              <h2>My Information</h2>
+              <button className="profile-save-btn" onClick={saveProfile}>Save Changes</button>
+            </div>
+
+            {/* full name */}
+            <div className="profile-row">
+              <div className="profile-label">Full Name</div>
+              <div className="profile-value">
+                {edit.fullName ? (
+                  <input
+                    type="text"
+                    value={user.fullName}
+                    onChange={(e) => setUser((u) => ({ ...u, fullName: e.target.value }))}
+                    className="profile-input"
+                  />
+                ) : (
+                  <span>{user.fullName}</span>
+                )}
               </div>
+              <button className="profile-edit-btn" onClick={() => toggleEdit('fullName')}>
+                {edit.fullName ? 'Done' : 'Edit'}
+              </button>
+            </div>
 
-              {loading ? (
-                <div className="profile-loading">Loading profile…</div>
-              ) : error ? (
-                <div className="profile-error">{error}</div>
-              ) : (
-                <>
-                  {/* Full Name */}
-                  <div className="profile-row">
-                    <div className="field-label">Full Name</div>
-                    <div className="field-value">
-                      {editField === "fullName" ? (
-                        <input
-                          className="profile-input"
-                          value={draft}
-                          onChange={(e) => setDraft(e.target.value)}
-                        />
-                      ) : (
-                        <span>{profile.fullName || "—"}</span>
-                      )}
-                    </div>
-                    <button className="edit-btn" onClick={() => startEdit("fullName")} title="Edit name">✏️</button>
-                  </div>
+            {/* phone */}
+            <div className="profile-row">
+              <div className="profile-label">Contact Number</div>
+              <div className="profile-value">
+                {edit.phoneNumber ? (
+                  <input
+                    type="text"
+                    value={user.phoneNumber}
+                    onChange={(e) => setUser((u) => ({ ...u, phoneNumber: e.target.value }))}
+                    className="profile-input"
+                  />
+                ) : (
+                  <span>{user.phoneNumber}</span>
+                )}
+              </div>
+              <button className="profile-edit-btn" onClick={() => toggleEdit('phoneNumber')}>
+                {edit.phoneNumber ? 'Done' : 'Edit'}
+              </button>
+            </div>
 
-                  {/* Phone Number */}
-                  <div className="profile-row">
-                    <div className="field-label">Phone Number</div>
-                    <div className="field-value">
-                      {editField === "phoneNumber" ? (
-                        <input
-                          className="profile-input"
-                          value={draft}
-                          onChange={(e) => setDraft(e.target.value)}
-                        />
-                      ) : (
-                        <span>{profile.phoneNumber || "—"}</span>
-                      )}
-                    </div>
-                    <button className="edit-btn" onClick={() => startEdit("phoneNumber")} title="Edit phone">✏️</button>
-                  </div>
-
-                  {/* Email */}
-                  <div className="profile-row">
-                    <div className="field-label">Email</div>
-                    <div className="field-value">
-                      {editField === "email" ? (
-                        <input
-                          className="profile-input"
-                          value={draft}
-                          onChange={(e) => setDraft(e.target.value)}
-                          placeholder="name@example.com"
-                        />
-                      ) : (
-                        <span className={`${!profile.email ? "muted" : ""}`}>
-                          {profile.email || "Add email"}
-                        </span>
-                      )}
-                    </div>
-                    <button className="edit-btn" onClick={() => startEdit("email")} title="Edit email">✏️</button>
-                  </div>
-
-                  {/* Avatar URL */}
-                  <div className="profile-row">
-                    <div className="field-label">Profile Photo</div>
-                    <div className="field-value">
-                      {editField === "avatarUrl" ? (
-                        <input
-                          className="profile-input"
-                          value={draft}
-                          onChange={(e) => setDraft(e.target.value)}
-                          placeholder="Paste image URL (https://…)"
-                        />
-                      ) : (
-                        <span className={`${!profile.avatarUrl ? "muted" : ""}`}>
-                          {profile.avatarUrl || "No photo set"}
-                        </span>
-                      )}
-                    </div>
-                    <button className="edit-btn" onClick={() => startEdit("avatarUrl")} title="Edit photo URL">✏️</button>
-                  </div>
-
-                  {/* Save/Cancel */}
-                  {editField && (
-                    <div className="profile-actions">
-                      <button className="save-btn" disabled={saving} onClick={saveEdit}>
-                        {saving ? "Saving…" : "Save"}
-                      </button>
-                      <button className="cancel-btn" disabled={saving} onClick={cancelEdit}>Cancel</button>
-                    </div>
-                  )}
-                </>
-              )}
+            {/* email */}
+            <div className="profile-row">
+              <div className="profile-label">Email</div>
+              <div className="profile-value">
+                {edit.email ? (
+                  <input
+                    type="email"
+                    value={user.email}
+                    onChange={(e) => setUser((u) => ({ ...u, email: e.target.value }))}
+                    className="profile-input"
+                    placeholder="Add email"
+                  />
+                ) : (
+                  <span>{user.email || 'Add email'}</span>
+                )}
+              </div>
+              <button className="profile-edit-btn" onClick={() => toggleEdit('email')}>
+                {edit.email ? 'Done' : 'Edit'}
+              </button>
             </div>
           </section>
         </div>
       </main>
 
-      {/* FOOTER (exactly same style as Homepage) */}
-      <footer className="contact-footer">
+      {/* FOOTER like homepage */}
+      <footer id="footer" className="contact-footer">
         <div className="contact-footer-left">
           <div className="footer-logo">
             <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />

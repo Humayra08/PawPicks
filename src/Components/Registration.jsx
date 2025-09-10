@@ -1,4 +1,3 @@
-// client/src/Components/Registration.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FooterLogoImg from "../Assets/logo.png";
@@ -88,7 +87,7 @@ export default function Registration() {
     try {
       setSubmitting(true);
 
-      // If you added "proxy": "http://localhost:5000" in client/package.json, use relative URL:
+      
       // POST /api/users/register
       const { data } = await axios.post(`/api/users/register`, {
         fullName,

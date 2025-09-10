@@ -12,8 +12,6 @@ export default function Login() {
   const [activeNavLink, setActiveNavLink] = useState("");
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  // Slide-in state for the form card
   const [formIn, setFormIn] = useState(false);
 
   const navigate = useNavigate();
@@ -53,22 +51,36 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent the form from submitting normally
+    e.preventDefault();
 
     try {
-      // Send POST request to backend API for login
-      const response = await axios.post("http://localhost:5000/api/users/login", {
-        fullName: form.fullname, // Only send full name
-        password: form.password, // Send password
+      // If you added "proxy" in client/package.json, this relative URL avoids CORS
+      const { data } = await axios.post(`/api/users/login`, {
+        fullName: form.fullname,   // backend expects "fullName"
+        password: form.password,
       });
 
-      // Handle successful login
-      console.log("Login successful:", response.data);
-      // Navigate to dashboard or home page
-      navigate("/dashboard"); 
+      // Save JWT + basic user info to localStorage
+      localStorage.setItem("jwt", data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          _id: data._id,
+          fullName: data.fullName,
+          phoneNumber: data.phoneNumber || "",
+          email: data.email || "",
+          avatarUrl: data.avatarUrl || "",
+        })
+      );
+
+      // Set default Authorization header for future axios requests
+      axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
+      // Go to Profile after successful login
+      navigate("/profile");
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      console.error("Login failed:", error?.response?.data || error.message);
+      alert(error?.response?.data?.message || "Login failed. Please check your credentials.");
     }
   };
 

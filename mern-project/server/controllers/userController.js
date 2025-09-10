@@ -1,35 +1,32 @@
+import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
+
+// helper
+const genToken = (id) =>
+  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 // REGISTER
 export const registerUser = async (req, res) => {
   const { fullName, phoneNumber, password, rePassword } = req.body;
-
-  console.log("Password:", password);  // Log the password
-  console.log("Repassword:", rePassword);  // Log the repassword
-
   try {
-    // Check if user already exists
-    const userExists = await User.findOne({ phoneNumber });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
+    if (!fullName || !phoneNumber || !password)
+      return res.status(400).json({ message: 'Missing fields' });
 
-    // Validate passwords
-    if (password !== rePassword) {
+    const exists = await User.findOne({ phoneNumber });
+    if (exists) return res.status(400).json({ message: 'User already exists' });
+
+    if (password !== rePassword)
       return res.status(400).json({ message: 'Passwords do not match' });
-    }
 
-    // Create new user (only save hashed password)
     const user = await User.create({ fullName, phoneNumber, password });
 
-    // Send success response
     res.status(201).json({
       _id: user._id,
       fullName: user.fullName,
       phoneNumber: user.phoneNumber,
     });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error while registering user' });
   }
 };
@@ -37,23 +34,80 @@ export const registerUser = async (req, res) => {
 // LOGIN (fullName + password)
 export const loginUser = async (req, res) => {
   const { fullName, password } = req.body;
-
   try {
-    // Check if user exists by fullName (instead of phone number)
     const user = await User.findOne({ fullName });
-
-    // Check if the password matches
     if (user && (await user.matchPassword(password))) {
-      res.status(200).json({
+      return res.status(200).json({
         _id: user._id,
         fullName: user.fullName,
-        phoneNumber: user.phoneNumber, // You can also send this if needed
+        phoneNumber: user.phoneNumber,
+        email: user.email || '',
+        avatarUrl: user.avatarUrl || '',
+        token: genToken(user._id),
       });
-    } else {
-      res.status(401).json({ message: 'Invalid full name or password' });
     }
-  } catch (error) {
-    console.error(error);
+    return res.status(401).json({ message: 'Invalid full name or password' });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error while logging in' });
+  }
+};
+
+// GET PROFILE
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching profile' });
+  }
+};
+
+// UPDATE PROFILE (name/phone/email)
+export const updateUserProfile = async (req, res) => {
+  const { fullName, phoneNumber, email } = req.body;
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (fullName !== undefined) user.fullName = fullName;
+    if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+    if (email !== undefined) user.email = email;
+
+    await user.save();
+    res.json({
+      message: 'Profile updated successfully',
+      user: {
+        fullName: user.fullName,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+        avatarUrl: user.avatarUrl || '',
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating profile' });
+  }
+};
+
+// UPLOAD AVATAR
+export const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // public URL we served in server.js
+    const avatarUrl = `/uploads/${req.file.filename}`;
+    user.avatarUrl = avatarUrl;
+    await user.save();
+
+    res.json({ message: 'Avatar updated', avatarUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error uploading avatar' });
   }
 };

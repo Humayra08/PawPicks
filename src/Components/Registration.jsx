@@ -14,14 +14,13 @@ const COUNTRY_CODES = [
 ];
 
 export default function Registration() {
-  const [activeNavLink, setActiveNavLink] = useState(""); 
+  const [activeNavLink, setActiveNavLink] = useState("");
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
-  // slide-in state for the form card (left -> right)
   const [formIn, setFormIn] = useState(false);
-
+  const [submitting, setSubmitting] = useState(false);          // NEW
   const navigate = useNavigate();
+
   const navItems = ["About", "Service", "Discovery", "Shop", "Contact"];
 
   useEffect(() => {
@@ -63,30 +62,51 @@ export default function Registration() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the form from submitting normally
-     console.log("Form data:", form);
+    e.preventDefault();
+    if (submitting) return;
 
-    // Ensure passwords match
-    if (form.password !== form.repassword) {
+    // Basic validation
+    const fullName = form.fullname.trim();
+    const phoneRaw = form.phone.trim();
+    const password = form.password;
+    const rePassword = form.repassword;
+
+    if (!fullName || !phoneRaw || !password || !rePassword) {
+      alert("Please fill all fields.");
+      return;
+    }
+    if (password !== rePassword) {
       alert("Passwords do not match.");
-      return; // Don't submit the form if passwords don't match
+      return;
     }
 
-    const phoneWithCode = dialCode + form.phone; // Combine phone number with country code
+    // Normalize phone (remove spaces, leading zeros etc. if needed)
+    const normalizedPhone = phoneRaw.replace(/\s+/g, "");
+    const phoneWithCode = `${dialCode}${normalizedPhone}`;
 
     try {
-      const response = await axios.post("http://localhost:5000/api/users/register", {
-        fullName: form.fullname,
-        phoneNumber: phoneWithCode, // Send phone number with country code
-        password: form.password,
-        rePassword: form.repassword,
+      setSubmitting(true);
+
+      
+      // POST /api/users/register
+      const { data } = await axios.post(`/api/users/register`, {
+        fullName,
+        phoneNumber: phoneWithCode,
+        password,
+        rePassword,
       });
 
-      console.log("Registration successful:", response.data);
-      navigate("/login"); // Redirect user to login page
+      console.log("Registration successful:", data);
+      alert("Registration successful! Please log in.");
+      navigate("/login");
     } catch (error) {
-      console.error("Registration failed:", error);
-      alert("Registration failed. Please try again.");
+      console.error("Registration failed:", error?.response?.data || error.message);
+      const msg =
+        error?.response?.data?.message ||
+        (error?.response?.status === 0 ? "Server unreachable" : "Registration failed. Please try again.");
+      alert(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -209,8 +229,8 @@ export default function Registration() {
                 <span className="dot" />
               </div>
 
-              <button className="register-primary-btn" type="submit">
-                Submit
+              <button className="register-primary-btn" type="submit" disabled={submitting}>
+                {submitting ? "Submitting..." : "Submit"}
               </button>
 
               <div className="register-muted">

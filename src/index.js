@@ -2,13 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
+
 import HomePage from './Components/HomePage.jsx';
 import Login from './Components/Login.jsx';
-import Registration from './Components/Registration.jsx'; // ✅ new
+import Registration from './Components/Registration.jsx';
 import ServicePage from './Components/ServicePage.jsx';
-import reportWebVitals from './reportWebVitals.js';
 import Shop from './Components/Shop.jsx';
-import Profile from './Components/Profile.jsx'; // New Import
+import Profile from './Components/Profile.jsx';
+import Products from './Components/Products.jsx';
+import Cart from './Components/Cart.jsx'; 
+
+import reportWebVitals from './reportWebVitals.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,9 +22,13 @@ root.render(
         <Route path="/" element={<HomePage />} />
         <Route path="/services" element={<ServicePage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Registration />} /> {/* ✅ */}
+        <Route path="/register" element={<Registration />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/profile" element={<Profile />} /> {/* New Route */}
+        <Route path="/product/:slug" element={<Products />} /> {/* ⬅️ Dynamic product route */}
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/cart" element={<Cart />} />
+        {/* Optional 404 / catch-all */}
+        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

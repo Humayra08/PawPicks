@@ -24,11 +24,9 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/product/:slug" element={<Products />} /> {/* ⬅️ Dynamic product route */}
+        <Route path="/product/:slug" element={<Products />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<Cart />} />
-        {/* Optional 404 / catch-all */}
-        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

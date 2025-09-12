@@ -2236,6 +2236,7 @@ body {
   font-weight: 700;
   background: linear-gradient(90deg,#421F72,#6B21A8);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   letter-spacing: .5px;
   margin: 4px 0 10px;

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 
 import connectDb from './db/connect.js';
 import userRoutes from './routes/userRoutes.js';
+import productRoutes from './routes/productRoutes.js'; // ✅ Add this line
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes); // ✅ Add this line
 
 app.get('/', (req, res) => res.send('MERN backend is live'));
 

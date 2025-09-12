@@ -16,30 +16,27 @@ const productSchema = new mongoose.Schema(
     brand: { type: String, required: true },
     type: { type: String, required: true, enum: ['food', 'toy'] },
     
-    // Product variants and options
     colors: [{ type: String }],
     variants: [{ type: String }],
     defaultColor: { type: String, default: '' },
     defaultVariant: { type: String, default: '' },
     
-    // Content fields
     description: { type: String, required: true },
     benefits: [{ type: String }],
     
-    // Image field (store filename or URL)
+  
     img: { type: String, required: true },
     
-    // Nutrition info (only for food items)
+
     nutrition: [nutritionSchema],
     
-    // Inventory
+
     stock: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }
 );
 
-// Pre-save middleware to generate slug if not provided
 productSchema.pre('save', function(next) {
   if (!this.slug && this.title) {
     this.slug = this.title
@@ -51,7 +48,7 @@ productSchema.pre('save', function(next) {
   next();
 });
 
-// Index for better search performance
+
 productSchema.index({ title: 'text', description: 'text' });
 productSchema.index({ category: 1, type: 1 });
 productSchema.index({ slug: 1 });

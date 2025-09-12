@@ -2,10 +2,8 @@ import mongoose from 'mongoose';
 import Product from './models/productsModel.js';
 import dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
 
-// Utility function to create URL-friendly slugs
 function slugify(str) {
   return str
     .toLowerCase()
@@ -14,7 +12,6 @@ function slugify(str) {
     .replace(/^-+|-+$/g, '');
 }
 
-// Base content for food products
 const baseBenefitsFood = [
   'Supports healthy skin and coat with Omega fatty acids.',
   'Boosts vitality through balanced vitamins & taurine.',
@@ -35,13 +32,11 @@ const baseNutrition = [
   { label: 'Moisture', value: 10 },
 ];
 
-// Common product options
 const foodColors = ['Green', 'Sky Blue', 'Orange', 'Pink Light', 'Black'];
 const foodVariants = ['50g', '100g', '250g', '1kg'];
 
-// Complete products data with proper image file names
 const products = [
-  // FOOD PRODUCTS
+
   {
     title: 'FILLET \'O\' LAKES - KIT CAT',
     img: 'Food1.png',
@@ -235,7 +230,6 @@ const products = [
     }
   },
 
-  // TOY PRODUCTS
   {
     title: 'DOG TOYS TO MOUTH',
     img: 'Toy1.png',
@@ -442,31 +436,25 @@ const products = [
   }
 ];
 
-// Add slugs to all products
 products.forEach(p => {
   p.slug = slugify(p.title);
 });
 
-// Database seeding function
 async function seedProducts() {
   try {
-    // Connect to MongoDB
-    console.log('🔄 Connecting to MongoDB...');
+    console.log(' Connecting to MongoDB...');
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/pawpicks');
-    console.log('✅ Connected to MongoDB');
+    console.log(' Connected to MongoDB');
     
-    // Clear existing products
-    console.log('🔄 Clearing existing products...');
+    console.log(' Clearing existing products...');
     await Product.deleteMany({});
-    console.log('✅ Existing products cleared');
+    console.log(' Existing products cleared');
     
-    // Insert new products
-    console.log('🔄 Inserting new products...');
+    console.log(' Inserting new products...');
     const insertedProducts = await Product.insertMany(products);
-    console.log(`✅ Successfully seeded ${insertedProducts.length} products!`);
+    console.log(` Successfully seeded ${insertedProducts.length} products!`);
     
-    // Display detailed summary
-    console.log('\n📊 Seeding Summary:');
+    console.log('\n Seeding Summary:');
     console.log(`   - Total Products: ${insertedProducts.length}`);
     
     const foodProducts = insertedProducts.filter(p => p.type === 'food');
@@ -475,69 +463,62 @@ async function seedProducts() {
     console.log(`   - Food Products: ${foodProducts.length}`);
     console.log(`   - Toy Products: ${toyProducts.length}`);
     
-    // Display food brands
     const foodBrands = [...new Set(foodProducts.map(p => p.brand))];
     console.log(`   - Food Brands: ${foodBrands.join(', ')}`);
     
-    // Display toy brands
     const toyBrands = [...new Set(toyProducts.map(p => p.brand))];
     console.log(`   - Toy Brands: ${toyBrands.join(', ')}`);
-    
-    // Price statistics
+
     const prices = insertedProducts.map(p => p.price);
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
     const avgPrice = (prices.reduce((a, b) => a + b, 0) / prices.length).toFixed(2);
     
-    console.log(`\n💰 Price Statistics:`);
+    console.log(`\n Price Statistics:`);
     console.log(`   - Minimum Price: ৳${minPrice}`);
     console.log(`   - Maximum Price: ৳${maxPrice}`);
     console.log(`   - Average Price: ৳${avgPrice}`);
     
-    // Stock statistics
     const totalStock = insertedProducts.reduce((sum, p) => sum + p.stock, 0);
-    console.log(`\n📦 Stock Statistics:`);
+    console.log(`\n Stock Statistics:`);
     console.log(`   - Total Stock: ${totalStock} items`);
     console.log(`   - Average Stock per Product: ${Math.round(totalStock / insertedProducts.length)} items`);
     
-    // Display image file names for verification
-    console.log(`\n🖼️  Image Files Used:`);
+    console.log(`\n  Image Files Used:`);
     const uniqueImages = [...new Set(insertedProducts.map(p => p.img))].sort();
     uniqueImages.forEach(img => {
       console.log(`   - ${img}`);
     });
     
-    // Display some sample slugs for testing
-    console.log(`\n🔗 Sample Product Slugs (for testing URLs):`);
+    console.log(`\n Sample Product Slugs (for testing URLs):`);
     insertedProducts.slice(0, 5).forEach(p => {
       console.log(`   - ${p.title} → /product/${p.slug}`);
     });
     
-    console.log('\n🎉 Database seeding completed successfully!');
-    console.log('💡 You can now test your API endpoints:');
+    console.log('\n Database seeding completed successfully!');
+    console.log(' You can now test your API endpoints:');
     console.log('   - GET /api/products (all products)');
     console.log('   - GET /api/products/type/food (food products only)');
     console.log('   - GET /api/products/type/toy (toy products only)');
     console.log(`   - GET /api/products/slug/${insertedProducts[0].slug} (single product)`);
     
-    // Close connection
+
     await mongoose.connection.close();
     console.log('✅ Database connection closed');
     
     process.exit(0);
   } catch (error) {
     console.error('❌ Error seeding products:', error);
-    
-    // Display more detailed error information
+ 
     if (error.name === 'ValidationError') {
-      console.error('📝 Validation errors:');
+      console.error(' Validation errors:');
       Object.keys(error.errors).forEach(key => {
         console.error(`   - ${key}: ${error.errors[key].message}`);
       });
     }
     
     if (error.code === 11000) {
-      console.error('🔄 Duplicate key error - some products may already exist');
+      console.error(' Duplicate key error - some products may already exist');
       console.error('   Consider running the script again to clear and re-seed');
     }
     
@@ -545,13 +526,12 @@ async function seedProducts() {
   }
 }
 
-// Display startup message
-console.log('🌟 PawPicks Product Database Seeder');
+
+console.log(' PawPicks Product Database Seeder');
 console.log('===================================');
-console.log(`📅 Starting seed process at: ${new Date().toISOString()}`);
-console.log(`👤 Running as user: ${process.env.USER || process.env.USERNAME || 'Humayra08'}`);
-console.log(`🗄️  Target database: ${process.env.MONGO_URI || 'mongodb://localhost:27017/pawpicks'}`);
+console.log(` Starting seed process at: ${new Date().toISOString()}`);
+console.log(` Running as user: ${process.env.USER || process.env.USERNAME || 'Humayra08'}`);
+console.log(`  Target database: ${process.env.MONGO_URI || 'mongodb://localhost:27017/pawpicks'}`);
 console.log('');
 
-// Run the seeding function
 seedProducts();

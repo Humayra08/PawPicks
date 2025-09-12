@@ -1,21 +1,107 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProductBySlug } from './productsData.jsx';
 
 import FooterLogoImg from '../Assets/logo.png';
 import Last from '../Assets/Last.png';
 import Poster from '../Assets/Poster.png';
 
-function Products() {
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const product = useMemo(() => getProductBySlug(slug), [slug]);
+import Food1 from '../Assets/Food1.png';
+import Food2 from '../Assets/Food2.png';
+import Food3 from '../Assets/Food3.png';
+import Food4 from '../Assets/Food4.png';
+import Food5 from '../Assets/Food5.png';
+import Food6 from '../Assets/Food6.png';
+import Food7 from '../Assets/Food7.png';
+import Food8 from '../Assets/Food8.png';
+import Toy1 from '../Assets/Toy1.png';
+import Toy2 from '../Assets/Toy2.png';
+import Toy3 from '../Assets/Toy3.png';
+import Toy4 from '../Assets/Toy4.png';
+import Toy5 from '../Assets/Toy5.png';
+import Toy6 from '../Assets/Toy6.png';
+import Toy7 from '../Assets/Toy7.png';
+import Toy8 from '../Assets/Toy8.png';
 
+function Products() {
+  const { slug } = useParams(); 
+  const navigate = useNavigate();
+  
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [activeNavLink, setActiveNavLink] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [cartCount, setCartCount] = useState(0);
   const [detailTab, setDetailTab] = useState('description');
+
+  const imageMap = {
+    'Food1.png': Food1,
+    'Food2.png': Food2,
+    'Food3.png': Food3,
+    'Food4.png': Food4,
+    'Food5.png': Food5,
+    'Food6.png': Food6,
+    'Food7.png': Food7,
+    'Food8.png': Food8,
+    'Toy1.png': Toy1,
+    'Toy2.png': Toy2,
+    'Toy3.png': Toy3,
+    'Toy4.png': Toy4,
+    'Toy5.png': Toy5,
+    'Toy6.png': Toy6,
+    'Toy7.png': Toy7,
+    'Toy8.png': Toy8,
+  };
+  
+  const getImageSrc = (imageName) => {
+    return imageMap[imageName] || '/images/placeholder.png';
+  };
+
+  const fetchProduct = async (productId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log(`🔄 Fetching product with ID: ${productId}`);
+      
+      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Product not found');
+        }
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log(' Product API Response:', result);
+      
+      if (result.success && result.data) {
+        setProduct(result.data);
+        console.log(` Loaded product: ${result.data.title}`);
+      } else {
+        throw new Error('Invalid API response format');
+      }
+    } catch (err) {
+      console.error('❌ Error fetching product:', err);
+      setError(err.message);
+      setProduct(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (slug) {
+      fetchProduct(slug);
+    }
+  }, [slug]);
 
   useEffect(() => {
     if (product) {
@@ -35,21 +121,151 @@ function Products() {
     else if (link === 'Shop') navigate('/shop');
   };
 
-  // Add to cart increases cart count
   const addToCart = () => {
     if (!product) return;
     setCartCount(c => c + Number(quantity));
+    console.log(`Added ${quantity} of ${product.title} to cart`);
   };
 
-  // Buy now does NOT change cart count
   const buyNow = () => {
-    // You could navigate to a checkout page here
-    // navigate('/checkout');
-    alert('Proceeding to buy now!');
+    if (!product) return;
+    alert(`Proceeding to buy ${quantity} ${product.title} now!`);
   };
 
-  // Show price in Taka, not Dollar
-  const priceFormatted = product ? `৳${product.price.toFixed(2)}` : '';
+  const priceFormatted = product ? `৳${product.price?.toFixed(2) || '0.00'}` : '';
+
+  if (loading) {
+    return (
+      <div className="product-page-root">
+        <header className="header">
+          <div className="nav-container">
+            <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
+              <span className="navbar-logo-text">PawPicks</span>
+            </div>
+            <nav className="nav-menu">
+              {navItems.map(item => (
+                <a
+                  key={item}
+                  href="#"
+                  className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
+                  onClick={(e) => handleNavClick(item, e)}
+                >
+                  {item}
+                </a>
+              ))}
+            </nav>
+            <div className="nav-actions">
+              <button className="notification-btn" aria-label="Notifications" type="button">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.882C3.456 15.75 3.194 15.248 3.447 14.894L5 12.382V9C5 6.581 6.718 4.563 9 4.1V3C9 2.448 9.448 2 10 2Z" fill="#9CA3AF" />
+                  <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
+                </svg>
+              </button>
+              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+                </svg>
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <div className="product-hero-poster">
+          <img src={Poster} alt="Poster" className="product-hero-main" style={{ height: "540px" }} />
+        </div>
+
+        <main className="product-detail-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🐾</div>
+            <div style={{ fontSize: '1.2rem', color: '#666' }}>Loading product details...</div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+
+  if (error) {
+    return (
+      <div className="product-page-root">
+        <header className="header">
+          <div className="nav-container">
+            <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
+              <span className="navbar-logo-text">PawPicks</span>
+            </div>
+            <nav className="nav-menu">
+              {navItems.map(item => (
+                <a
+                  key={item}
+                  href="#"
+                  className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
+                  onClick={(e) => handleNavClick(item, e)}
+                >
+                  {item}
+                </a>
+              ))}
+            </nav>
+            <div className="nav-actions">
+              <button className="notification-btn" aria-label="Notifications" type="button">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.882C3.456 15.75 3.194 15.248 3.447 14.894L5 12.382V9C5 6.581 6.718 4.563 9 4.1V3C9 2.448 9.448 2 10 2Z" fill="#9CA3AF" />
+                  <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
+                </svg>
+              </button>
+              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+                </svg>
+                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <div className="product-hero-poster">
+          <img src={Poster} alt="Poster" className="product-hero-main" style={{ height: "540px" }} />
+        </div>
+
+        <main className="product-detail-wrapper">
+          <div className="product-breadcrumb">
+            <span className="crumb-link" onClick={() => navigate('/shop')}>Shop</span>
+            <span className="crumb-sep">›</span>
+            <span className="crumb-current">Error</span>
+          </div>
+
+          <div style={{ padding: '40px 0 120px', textAlign: 'center' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
+            <h2 style={{ color: '#dc2626', marginBottom: '1rem' }}>Failed to load product</h2>
+            <p style={{ color: '#6B7280', marginBottom: '1.5rem' }}>{error}</p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button
+                onClick={() => fetchProduct(slug)}
+                style={{
+                  background: '#421F72', color: '#fff', border: 'none',
+                  padding: '12px 22px', borderRadius: 6, cursor: 'pointer'
+                }}
+              >
+                Try Again
+              </button>
+              <button
+                onClick={() => navigate('/shop')}
+                style={{
+                  background: '#6B7280', color: '#fff', border: 'none',
+                  padding: '12px 22px', borderRadius: 6, cursor: 'pointer'
+                }}
+              >
+                Back to Shop
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
 
   return (
     <div className="product-page-root">
@@ -96,169 +312,150 @@ function Products() {
         <div className="product-breadcrumb">
           <span className="crumb-link" onClick={() => navigate('/shop')}>Shop</span>
           <span className="crumb-sep">›</span>
-          {product ? (
-            <>
-              <span
-                className="crumb-link"
-                onClick={() => navigate('/shop#' + (product.type === 'food' ? 'food' : 'toy'))}
-              >
-                {product.category}
-              </span>
-              <span className="crumb-sep">›</span>
-              <span className="crumb-current">{product.title}</span>
-            </>
-          ) : (
-            <span className="crumb-current">Not Found</span>
-          )}
+          <span
+            className="crumb-link"
+            onClick={() => navigate('/shop#' + (product.type === 'food' ? 'food' : 'toy'))}
+          >
+            {product.category}
+          </span>
+          <span className="crumb-sep">›</span>
+          <span className="crumb-current">{product.title}</span>
         </div>
 
-        {!product && (
-          <div style={{ padding: '40px 0 120px' }}>
-            <h2>Product not found</h2>
-            <p style={{ color: '#6B7280' }}>The item you requested does not exist.</p>
-            <button
-              onClick={() => navigate('/shop')}
-              style={{
-                background: '#421F72', color: '#fff', border: 'none',
-                padding: '12px 22px', borderRadius: 6, cursor: 'pointer'
+        <div className="product-top-grid">
+          <div className="product-image-box">
+            <img 
+              src={getImageSrc(product.img)} 
+              alt={product.title} 
+              className="product-image-main"
+              onError={(e) => {
+                console.log(`Failed to load image: ${product.img}`);
+                e.target.src = '/images/placeholder.png';
               }}
-            >
-              Back to Shop
-            </button>
+            />
           </div>
-        )}
+          <div className="product-info-panel">
+            <h1 className="product-title">{product.title}</h1>
+            <div className="product-rating-line">
+              <span className="stars">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} style={{ color: i < Math.round(product.rating || 0) ? '#FACC15' : '#E5E7EB' }}>★</span>
+                ))}
+              </span>
+              <span className="rating-value">({(product.rating || 0).toFixed(1)})</span>
+            </div>
+            <div className="product-price">{priceFormatted}</div>
 
-        {product && (
-          <>
-            <div className="product-top-grid">
-              <div className="product-image-box">
-                <img src={product.img} alt={product.title} className="product-image-main" />
+            {product.colors?.length > 0 && (
+              <div className="product-option-block">
+                <div className="option-label">Color:</div>
+                <div className="option-values">
+                  {product.colors.map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setSelectedColor(c)}
+                      className={`chip ${selectedColor === c ? 'active' : ''}`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="product-info-panel">
-                <h1 className="product-title">{product.title}</h1>
-                <div className="product-rating-line">
-                  <span className="stars">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} style={{ color: i < Math.round(product.rating) ? '#FACC15' : '#E5E7EB' }}>★</span>
+            )}
+
+            <div className="product-option-block">
+              <div className="option-label">Quantity:</div>
+              <input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={e => setQuantity(Math.max(1, Number(e.target.value)))}
+                className="chip"
+                style={{ width: '80px', textAlign: 'center', fontWeight: '600' }}
+              />
+            </div>
+
+            <div className="product-sold">{product.sold || 0} Sold</div>
+
+            <div className="product-action-row">
+              <button className="buy-now-btn" type="button" onClick={buyNow}>Buy now</button>
+              <button className="add-cart-btn" type="button" onClick={addToCart}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M3 3H4.3l1.6 6h8.7l1.4-4H5.9" stroke="#421F72" strokeWidth="1.4" fill="none" />
+                  <circle cx="8.5" cy="16.2" r="1" fill="#421F72" />
+                  <circle cx="13.9" cy="16.2" r="1" fill="#421F72" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="product-detail-tabs-wrapper">
+          <div className="product-detail-bar">
+            <span>Product Detail</span>
+          </div>
+          <div className="product-detail-lower">
+            <div className="product-left-menu">
+              <button
+                className={`left-menu-btn ${detailTab === 'description' ? 'active' : ''}`}
+                onClick={() => setDetailTab('description')}
+              >
+                Product description
+              </button>
+              <button
+                className={`left-menu-btn ${detailTab === 'benefits' ? 'active' : ''}`}
+                onClick={() => setDetailTab('benefits')}
+              >
+                Benefits
+              </button>
+              {product.nutrition && (
+                <div className="nutrition-box">
+                  <h4>Nutrition</h4>
+                  <ul className="nutrition-list">
+                    {product.nutrition.map(n => (
+                      <li key={n.label}>
+                        <span>{n.label}</span><span>{n.value}%</span>
+                      </li>
                     ))}
-                  </span>
-                  <span className="rating-value">({product.rating.toFixed(1)})</span>
+                  </ul>
                 </div>
-                <div className="product-price">{priceFormatted}</div>
-
-                {product.colors?.length > 0 && (
-                  <div className="product-option-block">
-                    <div className="option-label">Color:</div>
-                    <div className="option-values">
-                      {product.colors.map(c => (
-                        <button
-                          key={c}
-                          type="button"
-                          onClick={() => setSelectedColor(c)}
-                          className={`chip ${selectedColor === c ? 'active' : ''}`}
-                        >
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* === Single Quantity Section === */}
-                <div className="product-option-block">
-                  <div className="option-label">Quantity:</div>
-                  <input
-                    type="number"
-                    min={1}
-                    value={quantity}
-                    onChange={e => setQuantity(Math.max(1, Number(e.target.value)))}
-                    className="chip"
-                    style={{ width: '80px', textAlign: 'center', fontWeight: '600' }}
-                  />
-                </div>
-
-                <div className="product-sold">{product.sold} Sold</div>
-
-                <div className="product-action-row">
-                  <button className="buy-now-btn" type="button" onClick={buyNow}>Buy now</button>
-                  <button className="add-cart-btn" type="button" onClick={addToCart}>
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M3 3H4.3l1.6 6h8.7l1.4-4H5.9" stroke="#421F72" strokeWidth="1.4" fill="none" />
-                      <circle cx="8.5" cy="16.2" r="1" fill="#421F72" />
-                      <circle cx="13.9" cy="16.2" r="1" fill="#421F72" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
 
-            <div className="product-detail-tabs-wrapper">
-              <div className="product-detail-bar">
-                <span>Product Detail</span>
-              </div>
-              <div className="product-detail-lower">
-                <div className="product-left-menu">
-                  <button
-                    className={`left-menu-btn ${detailTab === 'description' ? 'active' : ''}`}
-                    onClick={() => setDetailTab('description')}
-                  >
-                    Product description
-                  </button>
-                  <button
-                    className={`left-menu-btn ${detailTab === 'benefits' ? 'active' : ''}`}
-                    onClick={() => setDetailTab('benefits')}
-                  >
-                    Benefits
-                  </button>
-                  {product.nutrition && (
-                    <div className="nutrition-box">
-                      <h4>Nutrition</h4>
-                      <ul className="nutrition-list">
-                        {product.nutrition.map(n => (
-                          <li key={n.label}>
-                            <span>{n.label}</span><span>{n.value}%</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+            <div className="product-detail-content">
+              <table className="basic-info-table">
+                <tbody>
+                  <tr><th>Category</th><td>{product.category}</td></tr>
+                  <tr><th>Remaining Quantity</th><td>{product.stock || 'N/A'}</td></tr>
+                  <tr><th>Brand</th><td>{product.brand}</td></tr>
+                  <tr><th>Selected Color</th><td>{selectedColor || 'None'}</td></tr>
+                  <tr><th>Quantity</th><td>{quantity}</td></tr>
+                </tbody>
+              </table>
+
+              {detailTab === 'description' && (
+                <div className="description-block">
+                  <h3>Product description</h3>
+                  <p>
+                    {product.description?.split('\n').map((line, i) => (
+                      <span key={i}>{line}<br /></span>
+                    )) || 'No description available.'}
+                  </p>
                 </div>
+              )}
 
-                <div className="product-detail-content">
-                  <table className="basic-info-table">
-                    <tbody>
-                      <tr><th>Category</th><td>{product.category}</td></tr>
-                      <tr><th>Remaining Quantity</th><td>12342</td></tr>
-                      <tr><th>Brand</th><td>{product.brand}</td></tr>
-                      <tr><th>Selected Color</th><td>{selectedColor}</td></tr>
-                      <tr><th>Quantity</th><td>{quantity}</td></tr>
-                    </tbody>
-                  </table>
-
-                  {detailTab === 'description' && (
-                    <div className="description-block">
-                      <h3>Product description</h3>
-                      <p>
-                        {product.description.split('\n').map((line, i) => (
-                          <span key={i}>{line}<br /></span>
-                        ))}
-                      </p>
-                    </div>
-                  )}
-
-                  {detailTab === 'benefits' && (
-                    <div className="benefits-block">
-                      <h3>Benefits</h3>
-                      <ul>
-                        {product.benefits.map((b, i) => <li key={i}>{b}</li>)}
-                      </ul>
-                    </div>
-                  )}
+              {detailTab === 'benefits' && (
+                <div className="benefits-block">
+                  <h3>Benefits</h3>
+                  <ul>
+                    {product.benefits?.map((b, i) => <li key={i}>{b}</li>) || <li>No benefits listed.</li>}
+                  </ul>
                 </div>
-              </div>
+              )}
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </main>
 
       <footer className="contact-footer">

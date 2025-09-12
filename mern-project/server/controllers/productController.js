@@ -1,14 +1,10 @@
+import mongoose from 'mongoose';
 import Product from '../models/productsModel.js';
 
-// @desc    Get all products
-// @route   GET /api/products
-// @access  Public
 export const getAllProducts = async (req, res) => {
   try {
-    // Get query parameters for filtering
     const { category, type, brand, minPrice, maxPrice, sort } = req.query;
     
-    // Build filter object
     let filter = { isActive: true };
     
     if (category) {
@@ -28,16 +24,14 @@ export const getAllProducts = async (req, res) => {
       if (minPrice) filter.price.$gte = Number(minPrice);
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
-    
-    // Build sort object
+
     let sortObj = {};
     if (sort === 'price-low') sortObj.price = 1;
     else if (sort === 'price-high') sortObj.price = -1;
     else if (sort === 'rating') sortObj.rating = -1;
     else if (sort === 'newest') sortObj.createdAt = -1;
-    else sortObj.createdAt = -1; // default sort
-    
-    // Execute query
+    else sortObj.createdAt = -1;
+
     const products = await Product.find(filter).sort(sortObj);
     
     res.json({
@@ -55,12 +49,22 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-// @desc    Get single product by ID
-// @route   GET /api/products/:id
-// @access  Public
+
 export const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const { id } = req.params;
+    let product;
+    
+    if (mongoose.Types.ObjectId.isValid(id) && id.length === 24) {
+      
+      product = await Product.findById(id);
+    } else {
+      
+      product = await Product.findOne({ 
+        slug: id, 
+        isActive: true 
+      });
+    }
     
     if (!product || !product.isActive) {
       return res.status(404).json({ 
@@ -74,7 +78,7 @@ export const getProductById = async (req, res) => {
       data: product
     });
   } catch (error) {
-    console.error('Error fetching product by ID:', error);
+    console.error('Error fetching product by ID/slug:', error);
     res.status(500).json({ 
       success: false,
       message: 'Failed to fetch product',
@@ -83,9 +87,6 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// @desc    Get single product by slug
-// @route   GET /api/products/slug/:slug
-// @access  Public
 export const getProductBySlug = async (req, res) => {
   try {
     const product = await Product.findOne({ 
@@ -114,9 +115,6 @@ export const getProductBySlug = async (req, res) => {
   }
 };
 
-// @desc    Get products by category
-// @route   GET /api/products/category/:category
-// @access  Public
 export const getProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
@@ -139,10 +137,6 @@ export const getProductsByCategory = async (req, res) => {
     });
   }
 };
-
-// @desc    Get products by type (food/toy)
-// @route   GET /api/products/type/:type
-// @access  Public
 export const getProductsByType = async (req, res) => {
   try {
     const { type } = req.params;
@@ -166,9 +160,6 @@ export const getProductsByType = async (req, res) => {
   }
 };
 
-// @desc    Search products
-// @route   GET /api/products/search?q=searchterm
-// @access  Public
 export const searchProducts = async (req, res) => {
   try {
     const { q } = req.query;
@@ -180,7 +171,6 @@ export const searchProducts = async (req, res) => {
       });
     }
     
-    // Create text search query
     const searchRegex = new RegExp(q, 'i');
     
     const products = await Product.find({
@@ -214,19 +204,15 @@ export const searchProducts = async (req, res) => {
   }
 };
 
-// @desc    Get featured products (highly rated, popular)
-// @route   GET /api/products/featured
-// @access  Public
 export const getFeaturedProducts = async (req, res) => {
   try {
     const featuredProducts = await Product.find({ 
       isActive: true,
-      rating: { $gte: 4.0 }, // Products with rating 4.0 or higher
-      sold: { $gte: 100 } // Products with at least 100 sales
+      rating: { $gte: 4.0 },
+      sold: { $gte: 100 }
     })
     .sort({ rating: -1, sold: -1 })
-    .limit(8); // Limit to 8 featured products
-    
+    .limit(8); 
     res.json({
       success: true,
       count: featuredProducts.length,
@@ -242,9 +228,6 @@ export const getFeaturedProducts = async (req, res) => {
   }
 };
 
-// @desc    Create new product (DISABLED for now)
-// @route   POST /api/products
-// @access  Private/Admin
 export const createProduct = async (req, res) => {
   res.status(501).json({
     success: false,
@@ -252,9 +235,7 @@ export const createProduct = async (req, res) => {
   });
 };
 
-// @desc    Update product (DISABLED for now)
-// @route   PUT /api/products/:id
-// @access  Private/Admin
+
 export const updateProduct = async (req, res) => {
   res.status(501).json({
     success: false,
@@ -262,9 +243,6 @@ export const updateProduct = async (req, res) => {
   });
 };
 
-// @desc    Delete product (DISABLED for now)
-// @route   DELETE /api/products/:id
-// @access  Private/Admin
 export const deleteProduct = async (req, res) => {
   res.status(501).json({
     success: false,

@@ -1,14 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Remove this line - we'll fetch from API instead
-// import { allProducts } from './productsData.jsx';
 
 import FooterLogoImg from '../Assets/logo.png';
 import Last from '../Assets/Last.png';
 import Poster from '../Assets/Poster.png';
 import Frame from '../Assets/Frame.png';
 
-// Import all product images
 import Food1 from '../Assets/Food1.png';
 import Food2 from '../Assets/Food2.png';
 import Food3 from '../Assets/Food3.png';
@@ -29,12 +26,10 @@ import Toy8 from '../Assets/Toy8.png';
 function Shop() {
   const navigate = useNavigate();
   
-  // State for API data
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Image mapping object
   const imageMap = {
     'Food1.png': Food1,
     'Food2.png': Food2,
@@ -54,12 +49,10 @@ function Shop() {
     'Toy8.png': Toy8,
   };
   
-  // Function to get the actual imported image
   const getImageSrc = (imageName) => {
     return imageMap[imageName] || '/images/placeholder.png';
   };
   
-  // Computed values based on API data
   const foodProducts = useMemo(() => products.filter(p => p.type === 'food'), [products]);
   const toyProducts = useMemo(() => products.filter(p => p.type === 'toy'), [products]);
 
@@ -69,7 +62,6 @@ function Shop() {
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
 
-  // API call to fetch products
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -87,9 +79,9 @@ function Shop() {
       
       if (result.success && result.data) {
         setProducts(result.data);
-        console.log(`📦 Loaded ${result.data.length} products`);
-        console.log(`🍖 Food products: ${result.data.filter(p => p.type === 'food').length}`);
-        console.log(`🎾 Toy products: ${result.data.filter(p => p.type === 'toy').length}`);
+        console.log(` Loaded ${result.data.length} products`);
+        console.log(` Food products: ${result.data.filter(p => p.type === 'food').length}`);
+        console.log(` Toy products: ${result.data.filter(p => p.type === 'toy').length}`);
       } else {
         throw new Error('Invalid API response format');
       }
@@ -101,12 +93,10 @@ function Shop() {
     }
   };
 
-  // Fetch products on component mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  // Initialize favorites when products load
   useEffect(() => {
     if (products.length > 0) {
       setFavorites(Array(products.length).fill(false));
@@ -214,7 +204,6 @@ function Shop() {
     );
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="pet-care-app">
@@ -269,7 +258,6 @@ function Shop() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="pet-care-app">
@@ -342,7 +330,6 @@ function Shop() {
     );
   }
 
-  // Main render (using API data)
   return (
     <div className="pet-care-app">
       <header className="header">

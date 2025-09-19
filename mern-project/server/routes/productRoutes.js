@@ -31,7 +31,6 @@ router.get('/slug/:slug', getProductBySlug);
 router.get('/:id', getProductById);
 
 // ----- ADMIN ROUTE-----
-// Uncomment these when you want to implement admin features
 
 // Create new product
 // router.post('/', createProduct);

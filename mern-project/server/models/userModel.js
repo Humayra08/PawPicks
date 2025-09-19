@@ -7,11 +7,11 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true, unique: true },
     password: { type: String, required: true },
 
-    // Optional fields for profile
     email: { type: String, default: '' },
     avatarUrl: { type: String, default: '' },
 
-    // (future) social ids
+
+    
     googleId: { type: String, unique: true, sparse: true },
     linkedinId: { type: String, unique: true, sparse: true },
   },

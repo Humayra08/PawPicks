@@ -35,7 +35,7 @@ function Products() {
   const [quantity, setQuantity] = useState(1);
   const [detailTab, setDetailTab] = useState('description');
 
-  // ADD: Cart state and session management (same as Shop.jsx)
+ 
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
 
@@ -62,7 +62,6 @@ function Products() {
     return imageMap[imageName] || '/images/placeholder.png';
   };
 
-  // ADD: Initialize session ID and fetch cart count
   useEffect(() => {
     const initializeSession = async () => {
       let storedSessionId = localStorage.getItem('pawpicks-session-id');
@@ -93,7 +92,7 @@ function Products() {
     initializeSession();
   }, []);
 
-  // ADD: Fetch cart count
+  
   const fetchCartCount = async (sessionId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
@@ -127,16 +126,16 @@ function Products() {
       }
       
       const result = await response.json();
-      console.log('✅ Product API Response:', result);
+      console.log('Product API Response:', result);
       
       if (result.success && result.data) {
         setProduct(result.data);
-        console.log(`✅ Loaded product: ${result.data.title}`);
+        console.log(`Loaded product: ${result.data.title}`);
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (err) {
-      console.error('❌ Error fetching product:', err);
+      console.error(' Error fetching product:', err);
       setError(err.message);
       setProduct(null);
     } finally {
@@ -168,7 +167,6 @@ function Products() {
     else if (link === 'Shop') navigate('/shop');
   };
 
-  // UPDATED: Add to cart with API call (same as Shop.jsx)
   const addToCart = async () => {
     if (!product || !sessionId) {
       console.error('No product or session ID available');
@@ -191,10 +189,9 @@ function Products() {
       const result = await response.json();
       
       if (response.ok) {
-        console.log('✅ Added to cart:', product.title);
+        console.log('Added to cart:', product.title);
         setCartCount(result.data.totalItems);
         
-        // Visual feedback on the add to cart button
         const button = document.querySelector('.add-cart-btn');
         if (button) {
           const originalHTML = button.innerHTML;
@@ -218,10 +215,8 @@ function Products() {
   const buyNow = async () => {
     if (!product) return;
     
-    // First add to cart, then navigate to cart
     await addToCart();
     
-    // Small delay to ensure cart is updated, then navigate
     setTimeout(() => {
       navigate('/cart');
     }, 500);
@@ -257,7 +252,6 @@ function Products() {
                   <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              {/* UPDATED: Cart button with count and navigation */}
               <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
@@ -328,7 +322,6 @@ function Products() {
                   <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              {/* UPDATED: Cart button with count and navigation */}
               <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
@@ -425,7 +418,6 @@ function Products() {
                 <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            {/* UPDATED: Cart button with count and navigation */}
             <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />

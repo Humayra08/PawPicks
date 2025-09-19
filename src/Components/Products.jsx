@@ -33,8 +33,11 @@ function Products() {
   const [activeNavLink, setActiveNavLink] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [cartCount, setCartCount] = useState(0);
   const [detailTab, setDetailTab] = useState('description');
+
+  // ADD: Cart state and session management (same as Shop.jsx)
+  const [cartCount, setCartCount] = useState(0);
+  const [sessionId, setSessionId] = useState(null);
 
   const imageMap = {
     'Food1.png': Food1,
@@ -59,6 +62,50 @@ function Products() {
     return imageMap[imageName] || '/images/placeholder.png';
   };
 
+  // ADD: Initialize session ID and fetch cart count
+  useEffect(() => {
+    const initializeSession = async () => {
+      let storedSessionId = localStorage.getItem('pawpicks-session-id');
+      
+      if (!storedSessionId) {
+        try {
+          const response = await fetch('http://localhost:5000/api/cart/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            storedSessionId = result.data.sessionId;
+            localStorage.setItem('pawpicks-session-id', storedSessionId);
+          }
+        } catch (error) {
+          console.error('Error generating session:', error);
+        }
+      }
+      
+      if (storedSessionId) {
+        setSessionId(storedSessionId);
+        fetchCartCount(storedSessionId);
+      }
+    };
+
+    initializeSession();
+  }, []);
+
+  // ADD: Fetch cart count
+  const fetchCartCount = async (sessionId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+      if (response.ok) {
+        const result = await response.json();
+        setCartCount(result.data.totalItems || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    }
+  };
+
   const fetchProduct = async (productId) => {
     try {
       setLoading(true);
@@ -80,11 +127,11 @@ function Products() {
       }
       
       const result = await response.json();
-      console.log(' Product API Response:', result);
+      console.log('✅ Product API Response:', result);
       
       if (result.success && result.data) {
         setProduct(result.data);
-        console.log(` Loaded product: ${result.data.title}`);
+        console.log(`✅ Loaded product: ${result.data.title}`);
       } else {
         throw new Error('Invalid API response format');
       }
@@ -121,15 +168,63 @@ function Products() {
     else if (link === 'Shop') navigate('/shop');
   };
 
-  const addToCart = () => {
-    if (!product) return;
-    setCartCount(c => c + Number(quantity));
-    console.log(`Added ${quantity} of ${product.title} to cart`);
+  // UPDATED: Add to cart with API call (same as Shop.jsx)
+  const addToCart = async () => {
+    if (!product || !sessionId) {
+      console.error('No product or session ID available');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          productId: product._id,
+          quantity: quantity,
+          selectedColor: selectedColor,
+          selectedVariant: product.defaultVariant || ''
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('✅ Added to cart:', product.title);
+        setCartCount(result.data.totalItems);
+        
+        // Visual feedback on the add to cart button
+        const button = document.querySelector('.add-cart-btn');
+        if (button) {
+          const originalHTML = button.innerHTML;
+          button.innerHTML = '<span style="color: #10B981;">✓</span>';
+          button.style.backgroundColor = '#D1FAE5';
+          setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.backgroundColor = '';
+          }, 1000);
+        }
+      } else {
+        console.error('Failed to add to cart:', result.message);
+        alert(`Failed to add to cart: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add item to cart. Please try again.');
+    }
   };
 
-  const buyNow = () => {
+  const buyNow = async () => {
     if (!product) return;
-    alert(`Proceeding to buy ${quantity} ${product.title} now!`);
+    
+    // First add to cart, then navigate to cart
+    await addToCart();
+    
+    // Small delay to ensure cart is updated, then navigate
+    setTimeout(() => {
+      navigate('/cart');
+    }, 500);
   };
 
   const priceFormatted = product ? `৳${product.price?.toFixed(2) || '0.00'}` : '';
@@ -162,11 +257,30 @@ function Products() {
                   <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+              {/* UPDATED: Cart button with count and navigation */}
+              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
                 </svg>
-                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+                {cartCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-8px',
+                    background: '#dc2626',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold'
+                  }}>
+                    {cartCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -185,7 +299,6 @@ function Products() {
       </div>
     );
   }
-
 
   if (error) {
     return (
@@ -215,11 +328,30 @@ function Products() {
                   <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+              {/* UPDATED: Cart button with count and navigation */}
+              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
                 </svg>
-                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+                {cartCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-8px',
+                    background: '#dc2626',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold'
+                  }}>
+                    {cartCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -266,7 +398,6 @@ function Products() {
     );
   }
 
-
   return (
     <div className="product-page-root">
       <header className="header">
@@ -294,11 +425,30 @@ function Products() {
                 <path d="M7.5 17.25C7.5 18.493 8.507 19.5 10 19.5C11.493 19.5 12.5 18.493 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+            {/* UPDATED: Cart button with count and navigation */}
+            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 3H4.279C4.71 3 5.092 3.281 5.218 3.691L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.828 16.5 9.5 15.828 9.5 15C9.5 14.172 8.828 13.5 8 13.5C7.172 13.5 6.5 14.172 6.5 15C6.5 15.828 7.172 16.5 8 16.5ZM15 16.5C15.828 16.5 16.5 15.828 16.5 15C16.5 14.172 15.828 13.5 15 13.5C14.172 13.5 14.5 14.172 14.5 15C14.5 15.828 14.172 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
-              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: '#dc2626',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold'
+                }}>
+                  {cartCount}
+                </span>
+              )}
             </button>
           </div>
         </div>

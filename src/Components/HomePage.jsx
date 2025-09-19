@@ -37,6 +37,8 @@ function WhatWeOffer() {
 }
 
 function HomeFooter() {
+  const navigate = useNavigate();
+
   return (
     <footer className="contact-footer">
       <div className="contact-footer-left">
@@ -60,11 +62,11 @@ function HomeFooter() {
           <div className="footer-col">
             <div className="footer-col-title">Website</div>
             <ul>
-              <li>About</li>
-              <li>Service</li>
+              <li onClick={() => navigate('/')}>About</li>
+              <li onClick={() => navigate('/services')}>Service</li>
               <li>Discovery</li>
-              <li>Shop</li>
-              <li>Contact</li>
+              <li onClick={() => navigate('/shop')}>Shop</li>
+              <li onClick={() => navigate('/contact')}>Contact</li>
             </ul>
           </div>
         </div>
@@ -157,7 +159,6 @@ function ContactSection() {
             </div>
           </div>
         </div>
-        {/* Footer for homepage (now matches Shop page) */}
         <HomeFooter />
       </div>
     </section>
@@ -169,9 +170,57 @@ function HomePage() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  // ADD: Cart state and session management
+  const [cartCount, setCartCount] = useState(0);
+  const [sessionId, setSessionId] = useState(null);
+
   const navigate = useNavigate();
   const goToLogin = (e) => { e?.preventDefault?.(); navigate('/login'); };
   const goToRegister = (e) => { e?.preventDefault?.(); navigate('/register'); };
+
+  // ADD: Initialize session ID and fetch cart count
+  useEffect(() => {
+    const initializeSession = async () => {
+      let storedSessionId = localStorage.getItem('pawpicks-session-id');
+      
+      if (!storedSessionId) {
+        try {
+          const response = await fetch('http://localhost:5000/api/cart/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            storedSessionId = result.data.sessionId;
+            localStorage.setItem('pawpicks-session-id', storedSessionId);
+          }
+        } catch (error) {
+          console.error('Error generating session:', error);
+        }
+      }
+      
+      if (storedSessionId) {
+        setSessionId(storedSessionId);
+        fetchCartCount(storedSessionId);
+      }
+    };
+
+    initializeSession();
+  }, []);
+
+  // ADD: Fetch cart count
+  const fetchCartCount = async (sessionId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+      if (response.ok) {
+        const result = await response.json();
+        setCartCount(result.data.totalItems || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -213,6 +262,8 @@ function HomePage() {
       navigate("/services");
     } else if (linkName === "Shop") {
       navigate("/shop");
+    } else if (linkName === "Contact") {
+      navigate("/contact");
     }
   };
 
@@ -267,11 +318,36 @@ function HomePage() {
             ))}
           </nav>
           <div className="nav-actions">
-            <button className="notification-btn" aria-label="Notifications">
-              {/* ... SVG ... */}
+            <button className="notification-btn" aria-label="Notifications" type="button">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
+                <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
+              </svg>
             </button>
-            <button className="cart-btn" aria-label="Cart">
-              {/* ... SVG ... */}
+            {/* UPDATED: Cart button with count and navigation */}
+            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.172 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+              </svg>
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: '#dc2626',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold'
+                }}>
+                  {cartCount}
+                </span>
+              )}
             </button>
             <button
               type="button"

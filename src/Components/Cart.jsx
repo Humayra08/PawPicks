@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import FooterLogoImg from '../Assets/logo.png';
 import Last from '../Assets/Last.png';
 
-// Import the same image mapping from Shop.jsx
 import Food1 from '../Assets/Food1.png';
 import Food2 from '../Assets/Food2.png';
 import Food3 from '../Assets/Food3.png';
@@ -26,7 +25,6 @@ function Cart() {
   const [activeNavLink, setActiveNavLink] = useState('Shop');
   const navigate = useNavigate();
   
-  // Cart state
   const [cart, setCart] = useState({ items: [], totalAmount: 0, totalItems: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -57,14 +55,12 @@ function Cart() {
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
 
-  // Initialize session and fetch cart
   useEffect(() => {
     const initializeCart = async () => {
       try {
         let storedSessionId = localStorage.getItem('pawpicks-session-id');
         
         if (!storedSessionId) {
-          // Generate new session
           const response = await fetch('http://localhost:5000/api/cart/session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
@@ -322,7 +318,6 @@ function Cart() {
         </div>
       </header>
 
-      {/* Main Cart Content */}
       <main style={{ flex: 1, padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#421F72' }}>
@@ -407,7 +402,6 @@ function Cart() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '2rem' }}>
-            {/* Cart Items */}
             <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {cart.items.map((item) => (
@@ -423,7 +417,6 @@ function Cart() {
                       borderRadius: '8px'
                     }}
                   >
-                    {/* Product Image */}
                     <img
                       src={getImageSrc(item.product.img)}
                       alt={item.product.title}
@@ -438,7 +431,6 @@ function Cart() {
                       }}
                     />
 
-                    {/* Product Info */}
                     <div>
                       <h3
                         style={{
@@ -470,7 +462,6 @@ function Cart() {
                       </p>
                     </div>
 
-                    {/* Quantity Controls */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <button
                         onClick={() => handleQuantityChange(item, item.quantity - 1)}
@@ -518,7 +509,6 @@ function Cart() {
                       </button>
                     </div>
 
-                    {/* Remove Button & Total */}
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ fontSize: '1.2rem', fontWeight: '700', color: '#421F72', marginBottom: '0.5rem' }}>
                         ৳{(item.price * item.quantity).toFixed(2)}
@@ -544,7 +534,6 @@ function Cart() {
               </div>
             </div>
 
-            {/* Cart Summary */}
             <div style={{
               background: 'white',
               borderRadius: '12px',

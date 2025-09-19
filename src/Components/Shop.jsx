@@ -58,9 +58,56 @@ function Shop() {
 
   const [favorites, setFavorites] = useState([]);
   const [activeNavLink, setActiveNavLink] = useState('Shop');
+
+  // ADD: Cart state and session management
   const [cartCount, setCartCount] = useState(0);
+  const [sessionId, setSessionId] = useState(null);
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
+
+  // ADD: Initialize session ID
+  useEffect(() => {
+    const initializeSession = async () => {
+      let storedSessionId = localStorage.getItem('pawpicks-session-id');
+      
+      if (!storedSessionId) {
+        try {
+          const response = await fetch('http://localhost:5000/api/cart/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            storedSessionId = result.data.sessionId;
+            localStorage.setItem('pawpicks-session-id', storedSessionId);
+          }
+        } catch (error) {
+          console.error('Error generating session:', error);
+        }
+      }
+      
+      if (storedSessionId) {
+        setSessionId(storedSessionId);
+        fetchCartCount(storedSessionId);
+      }
+    };
+
+    initializeSession();
+  }, []);
+
+  // ADD: Fetch cart count
+  const fetchCartCount = async (sessionId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+      if (response.ok) {
+        const result = await response.json();
+        setCartCount(result.data.totalItems || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -122,9 +169,51 @@ function Shop() {
     });
   };
 
-  const addToCart = (product) => {
-    setCartCount(c => c + 1);
-    console.log('Add to cart:', product.title);
+  // UPDATED: Add to cart function with API call
+  const addToCart = async (product) => {
+    if (!sessionId) {
+      console.error('No session ID available');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          productId: product._id,
+          quantity: 1,
+          selectedColor: product.defaultColor || '',
+          selectedVariant: product.defaultVariant || ''
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('✅ Added to cart:', product.title);
+        setCartCount(result.data.totalItems);
+        
+        // Visual feedback
+        const button = document.activeElement;
+        if (button && button.classList.contains('shop-product-cart')) {
+          const originalHTML = button.innerHTML;
+          button.innerHTML = '<span style="color: #10B981;">✓</span>';
+          button.style.backgroundColor = '#D1FAE5';
+          setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.backgroundColor = '';
+          }, 1000);
+        }
+      } else {
+        console.error('Failed to add to cart:', result.message);
+        alert(`Failed to add to cart: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add item to cart. Please try again.');
+    }
   };
 
   const openProduct = (product) => {
@@ -232,11 +321,30 @@ function Shop() {
                   <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+              {/* UPDATED: Cart button with count */}
+              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
                 </svg>
-                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+                {cartCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-8px',
+                    background: '#dc2626',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold'
+                  }}>
+                    {cartCount}
+                  </span>
+                )}
               </button>
               <button type="button" className="auth-link" onClick={goToRegister} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                 Register /
@@ -286,11 +394,30 @@ function Shop() {
                   <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+              {/* UPDATED: Cart button with count */}
+              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
                 </svg>
-                {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+                {cartCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '-8px',
+                    right: '-8px',
+                    background: '#dc2626',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold'
+                  }}>
+                    {cartCount}
+                  </span>
+                )}
               </button>
               <button type="button" className="auth-link" onClick={goToRegister} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                 Register /
@@ -357,11 +484,30 @@ function Shop() {
                 <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')}>
+            {/* UPDATED: Cart button with count */}
+            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
-              {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: '#dc2626',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold'
+                }}>
+                  {cartCount}
+                </span>
+              )}
             </button>
             <button type="button" className="auth-link" onClick={goToRegister} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
               Register /

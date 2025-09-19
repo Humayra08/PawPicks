@@ -59,13 +59,11 @@ function Shop() {
   const [favorites, setFavorites] = useState([]);
   const [activeNavLink, setActiveNavLink] = useState('Shop');
 
-  // ADD: Cart state and session management
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
 
-  // ADD: Initialize session ID
   useEffect(() => {
     const initializeSession = async () => {
       let storedSessionId = localStorage.getItem('pawpicks-session-id');
@@ -114,7 +112,7 @@ function Shop() {
       setLoading(true);
       setError(null);
       
-      console.log('🔄 Fetching products from API...');
+      console.log(' Fetching products from API...');
       const response = await fetch('http://localhost:5000/api/products');
       
       if (!response.ok) {
@@ -122,7 +120,7 @@ function Shop() {
       }
       
       const result = await response.json();
-      console.log('✅ API Response:', result);
+      console.log(' API Response:', result);
       
       if (result.success && result.data) {
         setProducts(result.data);
@@ -133,7 +131,7 @@ function Shop() {
         throw new Error('Invalid API response format');
       }
     } catch (err) {
-      console.error('❌ Error fetching products:', err);
+      console.error(' Error fetching products:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -156,6 +154,7 @@ function Shop() {
     if (linkName === 'About') navigate('/');
     else if (linkName === 'Service') navigate('/services');
     else if (linkName === 'Shop') navigate('/shop');
+    else if (linkName === 'Contact') navigate('/contact');
   };
 
   const goToLogin = () => navigate('/login');
@@ -169,7 +168,6 @@ function Shop() {
     });
   };
 
-  // UPDATED: Add to cart function with API call
   const addToCart = async (product) => {
     if (!sessionId) {
       console.error('No session ID available');
@@ -195,7 +193,6 @@ function Shop() {
         console.log('✅ Added to cart:', product.title);
         setCartCount(result.data.totalItems);
         
-        // Visual feedback
         const button = document.activeElement;
         if (button && button.classList.contains('shop-product-cart')) {
           const originalHTML = button.innerHTML;
@@ -321,7 +318,6 @@ function Shop() {
                   <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              {/* UPDATED: Cart button with count */}
               <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
@@ -394,7 +390,6 @@ function Shop() {
                   <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
                 </svg>
               </button>
-              {/* UPDATED: Cart button with count */}
               <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
@@ -484,7 +479,6 @@ function Shop() {
                 <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            {/* UPDATED: Cart button with count */}
             <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
@@ -610,7 +604,7 @@ function Shop() {
                 <li onClick={() => navigate('/services')}>Service</li>
                 <li>Discovery</li>
                 <li onClick={() => navigate('/shop')}>Shop</li>
-                <li>Contact</li>
+                <li onClick={() => navigate('/contact')}>Contact</li>
               </ul>
             </div>
           </div>

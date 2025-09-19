@@ -10,9 +10,10 @@ import ServicePage from './Components/ServicePage.jsx';
 import Shop from './Components/Shop.jsx';
 import Profile from './Components/Profile.jsx';
 import Products from './Components/Products.jsx';
-import Cart from './Components/Cart.jsx'; 
-
+import Cart from './Components/Cart.jsx';
 import reportWebVitals from './reportWebVitals.js';
+import Contact from './Components/Contact';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,6 +28,8 @@ root.render(
         <Route path="/product/:slug" element={<Products />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/contact" element={<Contact />} />
+    
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

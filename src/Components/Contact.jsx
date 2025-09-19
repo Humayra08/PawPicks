@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 import FooterLogoImg from '../Assets/logo.png';
 import LastDog from '../Assets/LastDog.png';
 import Last from '../Assets/Last.png';
@@ -11,6 +12,9 @@ function Contact() {
   // ADD: Cart state and session management
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
+  
+  // ADD: Loading state for form submission
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Contact form state
   const [formData, setFormData] = useState({
@@ -20,6 +24,11 @@ function Contact() {
   });
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
+
+  // Initialize EmailJS
+  useEffect(() => {
+    emailjs.init("MEQHl1iUb81aIUi_j"); // Replace with your EmailJS public key
+  }, []);
 
   // ADD: Initialize session ID and fetch cart count
   useEffect(() => {
@@ -87,11 +96,41 @@ function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Thank you for contacting us! We'll get back to you soon.");
-    // Here you can add API call to submit the form
+    setIsSubmitting(true);
+
+    try {
+      const templateParams = {
+        to_email: 'musketeerst687175@gmail.com',
+        from_name: formData.fullName,
+        from_email: formData.email,
+        phone_number: formData.phoneNumber,
+        message: `New contact form submission from ${formData.fullName}`,
+      };
+
+
+      const result = await emailjs.send(
+        'service_zy8luuq',
+        'template_egv16ue',
+        templateParams
+      );
+
+      console.log('Email sent successfully:', result);
+      alert("Thank you for contacting us! We'll get back to you soon.");
+      
+      setFormData({
+        fullName: "",
+        phoneNumber: "",
+        email: "",
+      });
+
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert("Sorry, there was an error sending your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRefresh = () => {
@@ -175,7 +214,7 @@ function Contact() {
         </div>
       </header>
 
-      {/* Main Contact Content - UPDATED: Single section with both contact and footer */}
+      {/* Main Contact Content */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Contact Section */}
         <section style={{ flex: 1, padding: '2rem 0', background: 'white' }}>
@@ -194,6 +233,7 @@ function Contact() {
                     onChange={handleInputChange}
                     className="contact-input"
                     required
+                    disabled={isSubmitting}
                   />
                   <input
                     type="tel"
@@ -203,6 +243,7 @@ function Contact() {
                     onChange={handleInputChange}
                     className="contact-input"
                     required
+                    disabled={isSubmitting}
                   />
                   <input
                     type="email"
@@ -212,15 +253,21 @@ function Contact() {
                     onChange={handleInputChange}
                     className="contact-input"
                     required
+                    disabled={isSubmitting}
                   />
                   <div className="contact-btn-group">
-                    <button type="submit" className="contact-submit-btn">
-                      Submit
+                    <button 
+                      type="submit" 
+                      className="contact-submit-btn"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Sending...' : 'Submit'}
                     </button>
                     <button
                       type="button"
                       className="contact-refresh-btn"
                       onClick={handleRefresh}
+                      disabled={isSubmitting}
                     >
                       Refresh
                     </button>
@@ -237,7 +284,7 @@ function Contact() {
               </div>
             </div>
 
-            {/* Footer - KEPT: Original footer styling and colors */}
+            {/* Footer */}
             <footer className="contact-footer" style={{ marginTop: '3rem' }}>
               <div className="contact-footer-left">
                 <div className="footer-logo">

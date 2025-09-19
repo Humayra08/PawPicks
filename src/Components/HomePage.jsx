@@ -170,7 +170,6 @@ function HomePage() {
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // ADD: Cart state and session management
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
 
@@ -178,7 +177,6 @@ function HomePage() {
   const goToLogin = (e) => { e?.preventDefault?.(); navigate('/login'); };
   const goToRegister = (e) => { e?.preventDefault?.(); navigate('/register'); };
 
-  // ADD: Initialize session ID and fetch cart count
   useEffect(() => {
     const initializeSession = async () => {
       let storedSessionId = localStorage.getItem('pawpicks-session-id');
@@ -209,7 +207,6 @@ function HomePage() {
     initializeSession();
   }, []);
 
-  // ADD: Fetch cart count
   const fetchCartCount = async (sessionId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
@@ -324,7 +321,6 @@ function HomePage() {
                 <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            {/* UPDATED: Cart button with count and navigation */}
             <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.172 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
@@ -369,7 +365,6 @@ function HomePage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="main">
         <div className="hero-section">
           <div className="hero-content">

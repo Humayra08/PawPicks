@@ -166,7 +166,7 @@ function Products() {
     else if (link === 'Service') navigate('/services');
     else if (link === 'Shop') navigate('/shop');
     else if (link === 'Contact') navigate('/contact');
-    else if (link === 'Discovery') navigate('/discovery');
+   
   };
 
   const addToCart = async () => {

@@ -165,8 +165,6 @@ function Products() {
     if (link === 'About') navigate('/');
     else if (link === 'Service') navigate('/services');
     else if (link === 'Shop') navigate('/shop');
-    else if (link === 'Contact') navigate('/contact');
-   
   };
 
   const addToCart = async () => {
@@ -628,7 +626,7 @@ function Products() {
                 <li onClick={() => navigate('/services')}>Service</li>
                 <li onClick={() => navigate('/discovery')}>Discovery</li>
                 <li onClick={() => navigate('/shop')}>Shop</li>
-                <li onClick={() => navigate('/contact')}>Contact</li>
+                <li onClick={() => navigate('/contact')}></li>
               </ul>
             </div>
           </div>

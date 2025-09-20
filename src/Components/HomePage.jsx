@@ -6,6 +6,7 @@ import OrangeCat from '../Assets/OrangeCat.png';
 import FooterLogoImg from '../Assets/logo.png';
 import LastDog from '../Assets/LastDog.png';
 import Last from '../Assets/Last.png';
+import emailjs from '@emailjs/browser';
 
 const getInitials = (fullName = '') => {
   const parts = fullName.trim().split(/\s+/);
@@ -71,9 +72,9 @@ function HomeFooter() {
             <ul>
               <li onClick={() => navigate('/')}>About</li>
               <li onClick={() => navigate('/services')}>Service</li>
-              <li>Discovery</li>
-              <li onClick={() => navigate('/shop')}>Shop</li>
+              <li onClick={() => navigate('/discovery')}>Discovery</li>
               <li onClick={() => navigate('/contact')}>Contact</li>
+              <li onClick={() => navigate('/shop')}>Shop</li>
             </ul>
           </div>
         </div>
@@ -83,11 +84,18 @@ function HomeFooter() {
 }
 
 function ContactSection() {
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
     email: "",
   });
+
+  useEffect(() => {
+    emailjs.init("MEQHl1iUb81aIUi_j"); // Replace with your EmailJS public key
+  }, []);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,18 +105,53 @@ function ContactSection() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+
+    try {
+      const templateParams = {
+        to_email: 'musketeerst687175@gmail.com',
+        from_name: formData.fullName,
+        from_email: formData.email,
+        phone_number: formData.phoneNumber,
+        message: `New contact form submission from ${formData.fullName}`,
+      };
+
+
+      const result = await emailjs.send(
+        'service_zy8luuq',
+        'template_egv16ue',
+        templateParams
+      );
+
+      console.log('Email sent successfully:', result);
+      alert("Thank you for contacting us! We'll get back to you soon.");
+      
+      setFormData({
+        fullName: "",
+        phoneNumber: "",
+        email: "",
+      });
+
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert("Sorry, there was an error sending your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  
   const handleRefresh = () => {
     setFormData({
       fullName: "",
       phoneNumber: "",
       email: "",
     });
+    
   };
+
 
   return (
     <section>
@@ -145,7 +188,7 @@ function ContactSection() {
               />
               <div className="contact-btn-group">
                 <button type="submit" className="contact-submit-btn">
-                  Submit
+                  {isSubmitting ? 'Sending...' : 'Submit'}
                 </button>
                 <button
                   type="button"
@@ -313,15 +356,11 @@ function HomePage() {
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
-    if (linkName === "About") {
-      navigate("/");
-    } else if (linkName === "Service") {
-      navigate("/services");
-    } else if (linkName === "Shop") {
-      navigate("/shop");
-    } else if (linkName === "Contact") {
-      navigate("/contact");
-    }
+    if (linkName === "About") navigate("/");
+    else if (linkName === "Service") navigate("/services");
+    else if (linkName === "Shop") navigate("/shop");
+    else if (linkName === "Contact") navigate("/contact");
+    else if (linkName === "Discovery") navigate("/discovery");
   };
 
   const handleCardMouseEnter = (e) => {
@@ -329,15 +368,18 @@ function HomePage() {
     card.style.transform = 'translateY(-5px) scale(1.05)';
     card.style.transition = 'all 0.3s ease';
   };
+
   const handleCardMouseLeave = (e) => {
     const card = e.currentTarget;
     card.style.transform = 'translateY(0) scale(1)';
   };
+
   const handleCardClick = (e) => {
     const card = e.currentTarget;
     card.style.animation = 'bounce 0.6s ease';
     setTimeout(() => { card.style.animation = ''; }, 600);
   };
+
   const handleHeartClick = (e) => {
     const heart = e.currentTarget;
     heart.style.animation = 'heartBeat 0.8s ease';
@@ -383,7 +425,7 @@ function HomePage() {
             </button>
             <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.172 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
               {cartCount > 0 && (
                 <span style={{

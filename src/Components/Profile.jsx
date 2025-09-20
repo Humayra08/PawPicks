@@ -284,11 +284,11 @@ export default function Profile() {
             <div className="footer-col">
               <div className="footer-col-title">Website</div>
               <ul>
-                <li>About</li>
-                <li>Service</li>
-                <li>Discovery</li>
-                <li>Shop</li>
-                <li>Contact</li>
+                 <li onClick={() => navigate('/')}>About</li>
+                <li onClick={() => navigate('/services')}>Service</li>
+                <li onClick={() => navigate('/discovery')}>Discovery</li>
+                <li onClick={() => navigate('/contact')}>Contact</li>
+                <li onClick={() => navigate('/shop')}>Shop</li>
               </ul>
             </div>
           </div>

@@ -193,6 +193,8 @@ function Cart() {
     if (linkName === "About") navigate("/");
     else if (linkName === "Service") navigate("/services");
     else if (linkName === "Shop") navigate("/shop");
+    else if (linkName === "Contact") navigate("/contact");
+    else if (linkName === "Discovery") navigate("/discovery");
   };
 
   const handleQuantityChange = (item, newQuantity) => {
@@ -631,9 +633,10 @@ function Cart() {
               <ul>
                 <li onClick={() => navigate('/')}>About</li>
                 <li onClick={() => navigate('/services')}>Service</li>
-                <li>Discovery</li>
+                <li onClick={() => navigate('/discovery')}>Discovery</li>
+                <li onClick={() => navigate('/contact')}>Contact</li>
                 <li onClick={() => navigate('/shop')}>Shop</li>
-                <li>Contact</li>
+                
               </ul>
             </div>
           </div>

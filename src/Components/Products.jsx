@@ -624,9 +624,9 @@ function Products() {
               <ul>
                 <li onClick={() => navigate('/')}>About</li>
                 <li onClick={() => navigate('/services')}>Service</li>
-                <li onClick={() => navigate('/discovery')}>Discovery</li>
+                <li>Discovery</li>
                 <li onClick={() => navigate('/shop')}>Shop</li>
-                <li onClick={() => navigate('/contact')}></li>
+                <li>Contact</li>
               </ul>
             </div>
           </div>

@@ -5,18 +5,27 @@ import FooterLogoImg from '../Assets/logo.png';
 import LastDog from '../Assets/LastDog.png';
 import Last from '../Assets/Last.png';
 
+const getInitials = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0]?.[0] || '';
+  const second = parts[1]?.[0] || '';
+  return (first + second).toUpperCase();
+};
+
 function Contact() {
   const [activeNavLink, setActiveNavLink] = useState('Contact');
   const navigate = useNavigate();
   
-  // ADD: Cart state and session management
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
   
-  // ADD: Loading state for form submission
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Contact form state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: "",
     phoneNumber: "",
@@ -25,12 +34,61 @@ function Contact() {
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
 
-  // Initialize EmailJS
   useEffect(() => {
-    emailjs.init("MEQHl1iUb81aIUi_j"); // Replace with your EmailJS public key
+    const checkAuth = () => {
+      const jwt = localStorage.getItem('jwt');
+      const userData = localStorage.getItem('user');
+      
+      if (jwt && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setIsLoggedIn(true);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('jwt');
+          localStorage.removeItem('user');
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuth();
   }, []);
 
-  // ADD: Initialize session ID and fetch cart count
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUser(null);
+    setShowProfileDropdown(false);
+    navigate('/');
+  };
+
+  const goToProfile = () => {
+    setShowProfileDropdown(false);
+    navigate('/profile');
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileDropdown]);
+
+  useEffect(() => {
+    emailjs.init("MEQHl1iUb81aIUi_j"); 
+  }, []);
+
   useEffect(() => {
     const initializeSession = async () => {
       let storedSessionId = localStorage.getItem('pawpicks-session-id');
@@ -61,7 +119,6 @@ function Contact() {
     initializeSession();
   }, []);
 
-  // ADD: Fetch cart count
   const fetchCartCount = async (sessionId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
@@ -108,7 +165,6 @@ function Contact() {
         phone_number: formData.phoneNumber,
         message: `New contact form submission from ${formData.fullName}`,
       };
-
 
       const result = await emailjs.send(
         'service_zy8luuq',
@@ -169,10 +225,9 @@ function Contact() {
                 <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-            {/* Cart button with count and navigation */}
             <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.172 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
               {cartCount > 0 && (
                 <span style={{
@@ -194,27 +249,73 @@ function Contact() {
                 </span>
               )}
             </button>
-            <button
-              type="button"
-              className="auth-link"
-              onClick={() => navigate('/register')}
-              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
-            >
-              Register /
-            </button>
-            <button
-              type="button"
-              className="auth-link"
-              onClick={() => navigate('/login')}
-              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
-            >
-              Login
-            </button>
+            
+            {isLoggedIn && user ? (
+              <div className="profile-dropdown-container">
+                <div 
+                  className="nav-profile-avatar"
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                  title={user.fullName}
+                >
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt="Profile" />
+                  ) : (
+                    getInitials(user.fullName)
+                  )}
+                </div>
+                
+                <div className={`profile-dropdown ${showProfileDropdown ? 'show' : ''}`}>
+                  <div className="dropdown-header">
+                    <p className="dropdown-user-name">{user.fullName}</p>
+                    <p className="dropdown-user-email">{user.email || user.phoneNumber}</p>
+                  </div>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button className="dropdown-item" onClick={goToProfile}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        View Profile
+                      </button>
+                    </li>
+                    <li>
+                      <button className="dropdown-item logout" onClick={handleLogout}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                          <polyline points="16,17 21,12 16,7"></polyline>
+                          <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="auth-link"
+                  onClick={() => navigate('/register')}
+                  style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+                >
+                  Register /
+                </button>
+                <button
+                  type="button"
+                  className="auth-link"
+                  onClick={() => navigate('/login')}
+                  style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+                >
+                  Login
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Main Contact Content */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Contact Section */}
         <section style={{ flex: 1, padding: '2rem 0', background: 'white' }}>

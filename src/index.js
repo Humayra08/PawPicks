@@ -13,6 +13,7 @@ import Products from './Components/Products.jsx';
 import Cart from './Components/Cart.jsx';
 import reportWebVitals from './reportWebVitals.js';
 import Contact from './Components/Contact';
+import Discovery from './Components/Discovery';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -29,6 +30,7 @@ root.render(
         <Route path="/profile" element={<Profile />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/discovery" element={<Discovery />} />
     
       </Routes>
     </BrowserRouter>

@@ -162,9 +162,11 @@ function Products() {
   const handleNavClick = (link, e) => {
     e.preventDefault();
     setActiveNavLink(link);
-    if (link === 'About') navigate('/');
-    else if (link === 'Service') navigate('/services');
-    else if (link === 'Shop') navigate('/shop');
+     if (link === "About") navigate("/");
+    else if (link === "Service") navigate("/services");
+    else if (link === "Shop") navigate("/shop");
+    else if (link === "Contact") navigate("/contact");
+    else if (link === "Discovery") navigate("/discovery");
   };
 
   const addToCart = async () => {
@@ -622,11 +624,11 @@ function Products() {
             <div className="footer-col">
               <div className="footer-col-title">Website</div>
               <ul>
-                <li onClick={() => navigate('/')}>About</li>
+              <li onClick={() => navigate('/')}>About</li>
                 <li onClick={() => navigate('/services')}>Service</li>
-                <li>Discovery</li>
+                <li onClick={() => navigate('/discovery')}>Discovery</li>
+                <li onClick={() => navigate('/contact')}>Contact</li>
                 <li onClick={() => navigate('/shop')}>Shop</li>
-                <li>Contact</li>
               </ul>
             </div>
           </div>

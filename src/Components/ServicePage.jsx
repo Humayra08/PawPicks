@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 import doctorImg from "../Assets/doctor.png";
 import doggosImg from "../Assets/doggos.png";
 import dogImg from "../Assets/dog.png";
 import doggoImg from "../Assets/doggo.png";
 import doggyImg from "../Assets/doggy.png";
 import FooterLogoImg from '../Assets/logo.png';
-import LastDog from '../Assets/LastDog.png';
-import Last from '../Assets/Last.png';
+import LastDog from "../Assets/LastDog.png";
+import Last from "../Assets/Last.png";
 
 import img1 from "../Assets/1.png";
 import img2 from "../Assets/2.png";
@@ -38,10 +39,51 @@ function ServicePage() {
   const [activeNavLink, setActiveNavLink] = useState('Service');
   const [headerVisible, setHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false); // For form submission loading state
 
   const navigate = useNavigate();
-  const goToLogin = (e) => { e?.preventDefault?.(); navigate('/login'); };
-  const goToRegister = (e) => { e?.preventDefault?.(); navigate('/register'); };
+
+  // Add session and cart management
+  const [cartCount, setCartCount] = useState(0);
+  const [sessionId, setSessionId] = useState(null);
+
+  useEffect(() => {
+    const initializeSession = async () => {
+      let storedSessionId = localStorage.getItem('pawpicks-session-id');
+      if (!storedSessionId) {
+        try {
+          const response = await fetch('http://localhost:5000/api/cart/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (response.ok) {
+            const result = await response.json();
+            storedSessionId = result.data.sessionId;
+            localStorage.setItem('pawpicks-session-id', storedSessionId);
+          }
+        } catch (error) {
+          console.error('Error generating session:', error);
+        }
+      }
+      if (storedSessionId) {
+        setSessionId(storedSessionId);
+        fetchCartCount(storedSessionId);
+      }
+    };
+    initializeSession();
+  }, []);
+
+  const fetchCartCount = async (sessionId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+      if (response.ok) {
+        const result = await response.json();
+        setCartCount(result.data.totalItems || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching cart count:', error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,15 +105,55 @@ function ServicePage() {
     if (linkName === "About") navigate("/");
     else if (linkName === "Service") navigate("/services");
     else if (linkName === "Shop") navigate("/shop");
+    else if (linkName === "Contact") navigate("/contact");
+    else if (linkName === "Discovery") navigate("/discovery");
   };
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = e => { e.preventDefault(); console.log("Form submitted:", formData); };
-  const handleRefresh = () => setFormData({ fullName: "", phoneNumber: "", email: "" });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const templateParams = {
+        to_email: 'musketeerst687175@gmail.com',
+        from_name: formData.fullName,
+        from_email: formData.email,
+        phone_number: formData.phoneNumber,
+        message: `New contact form submission from ${formData.fullName}`,
+      };
+
+      const result = await emailjs.send(
+        'service_zy8luuq',
+        'template_egv16ue',
+        templateParams
+      );
+      console.log('Email sent successfully:', result);
+      alert("Thank you for contacting us! We'll get back to you soon.");
+
+      setFormData({
+        fullName: "",
+        phoneNumber: "",
+        email: "",
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert("Sorry, there was an error sending your message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    setFormData({
+      fullName: "",
+      phoneNumber: "",
+      email: "",
+    });
+  };
 
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
 
@@ -109,17 +191,35 @@ function ServicePage() {
                 <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
               </svg>
             </button>
-
-            <button className="cart-btn" aria-label="Cart">
+            {/* Cart button with count and navigation */}
+            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
               </svg>
+              {cartCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: '#dc2626',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold'
+                }}>
+                  {cartCount}
+                </span>
+              )}
             </button>
-
             <button
               type="button"
               className="auth-link"
-              onClick={goToRegister}
+              onClick={() => navigate('/register')}
               style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
             >
               Register /
@@ -127,7 +227,7 @@ function ServicePage() {
             <button
               type="button"
               className="auth-link"
-              onClick={goToLogin}
+              onClick={() => navigate('/login')}
               style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
             >
               Login
@@ -136,7 +236,7 @@ function ServicePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Service Cards */}
       <div className="service-main">
         <div className="service-hero-row">
           <div className="service-hero-left">
@@ -147,16 +247,11 @@ function ServicePage() {
             </div>
           </div>
           <div className="service-hero-right">
-            <svg viewBox="0 0 600 400" width="600" height="400">
-              <circle cx="370" cy="220" r="160" stroke="#CBAFF9" strokeWidth="8" fill="none" />
-              <circle cx="370" cy="220" r="110" stroke="#EAD8FC" strokeWidth="5" fill="none" />
-              <circle cx="370" cy="220" r="60" stroke="#EAD8FC" strokeWidth="3" fill="none" />
-            </svg>
             <img src={doggosImg} alt="Group of Dogs" className="service-doggos-img-right" />
             <div className="doctor-card-middle-right">
               <img src={doctorImg} alt="Doctor Jane" className="doctor-pic" />
               <div className="doctor-info">
-                <span className="doctor-name">dr.Jane</span>
+                <span className="doctor-name">Dr. Jane</span>
                 <span className="doctor-rating">1k+ ★</span>
               </div>
             </div>
@@ -176,15 +271,15 @@ function ServicePage() {
         </div>
       </div>
 
-      {/* WHAT WE OFFER */}
+      {/* What We Offer */}
       <section className="offer-root">
         <h2 className="offer-title">WHAT WE OFFER <span className="paw-icon">🐾</span></h2>
         <p className="offer-desc">
-         At our pet care center, we offer a comprehensive range of services to keep your pets happy and healthy. 
-          From grooming and bathing to ensure their look and feel their best, to veterinary check-ups and vaccinations 
-          for their health and safety, we cover all your pet’s needs. We also provide specialized training programs to 
-          help with behavior and obedience, as well as luxurious boarding facilities for when you’re away. 
-          Our dedicated team is passionate about providing the highest level of care and love for your furry friends, 
+          At our pet care center, we offer a comprehensive range of services to keep your pets happy and healthy.
+          From grooming and bathing to ensure their look and feel their best, to veterinary check-ups and vaccinations
+          for their health and safety, we cover all your pet’s needs. We also provide specialized training programs to
+          help with behavior and obedience, as well as luxurious boarding facilities for when you’re away.
+          Our dedicated team is passionate about providing the highest level of care and love for your furry friends,
           treating them as if they were our own.
         </p>
 
@@ -201,7 +296,7 @@ function ServicePage() {
         ))}
       </section>
 
-      {/* Contact */}
+      {/* Contact Form */}
       <section className="contact-root">
         <div className="contact-main">
           <div className="contact-left">
@@ -234,38 +329,38 @@ function ServicePage() {
         </div>
 
         {/* Footer */}
-         <footer className="contact-footer">
-        <div className="contact-footer-left">
-          <div className="footer-logo">
-            <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
-          </div>
-          <div className="footer-desc">
-            Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
-          </div>
-        </div>
-        <div className="contact-footer-center">
-          <div className="footer-polaroid">
-            <div className="footer-polaroid-frame">
-              <img src={Last} alt="Dog" className="footer-dog-img" />
+        <footer className="contact-footer">
+          <div className="contact-footer-left">
+            <div className="footer-logo">
+              <img src={FooterLogoImg} alt="Footer Logo" className="footer-logo-img" />
             </div>
-            <div className="footer-polaroid-dash"></div>
-          </div>
-        </div>
-        <div className="contact-footer-right">
-          <div className="footer-cols">
-            <div className="footer-col">
-              <div className="footer-col-title">Website</div>
-              <ul>
-                <li>About</li>
-                <li>Service</li>
-                <li>Discovery</li>
-                <li>Shop</li>
-                <li>Contact</li>
-              </ul>
+            <div className="footer-desc">
+              Welcome to Cuddle & Care Pets! We provide quality pet products, grooming, and care advice for your furry friends.
             </div>
           </div>
-        </div>
-      </footer>
+          <div className="contact-footer-center">
+            <div className="footer-polaroid">
+              <div className="footer-polaroid-frame">
+                <img src={Last} alt="Dog" className="footer-dog-img" />
+              </div>
+              <div className="footer-polaroid-dash"></div>
+            </div>
+          </div>
+          <div className="contact-footer-right">
+            <div className="footer-cols">
+              <div className="footer-col">
+                <div className="footer-col-title">Website</div>
+                <ul>
+                  <li onClick={() => navigate('/')}>About</li>
+                  <li onClick={() => navigate('/services')}>Service</li>
+                  <li onClick={() => navigate('/discovery')}>Discovery</li>
+                  <li onClick={() => navigate('/contact')}>Contact</li>
+                  <li onClick={() => navigate('/shop')}>Shop</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
       </section>
     </div>
   );

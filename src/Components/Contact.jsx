@@ -77,15 +77,11 @@ function Contact() {
   const handleNavClick = (linkName, e) => {
     e.preventDefault();
     setActiveNavLink(linkName);
-    if (linkName === "About") {
-      navigate("/");
-    } else if (linkName === "Service") {
-      navigate("/services");
-    } else if (linkName === "Shop") {
-      navigate("/shop");
-    } else if (linkName === "Contact") {
-      navigate("/contact");
-    }
+    if (linkName === "About") navigate("/");
+    else if (linkName === "Service") navigate("/services");
+    else if (linkName === "Shop") navigate("/shop");
+    else if (linkName === "Contact") navigate("/contact");
+    else if (linkName === "Discovery") navigate("/discovery");
   };
 
   const handleInputChange = (e) => {
@@ -309,9 +305,9 @@ function Contact() {
                     <ul>
                       <li onClick={() => navigate('/')}>About</li>
                       <li onClick={() => navigate('/services')}>Service</li>
-                      <li>Discovery</li>
-                      <li onClick={() => navigate('/shop')}>Shop</li>
-                      <li onClick={() => navigate('/contact')}>Contact</li>
+                     <li onClick={() => navigate('/discovery')}>Discovery</li>
+                     <li onClick={() => navigate('/contact')}>Contact</li>
+                    <li onClick={() => navigate('/shop')}>Shop</li>
                     </ul>
                   </div>
                 </div>

@@ -23,6 +23,13 @@ import Toy6 from '../Assets/Toy6.png';
 import Toy7 from '../Assets/Toy7.png';
 import Toy8 from '../Assets/Toy8.png';
 
+const getInitials = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0]?.[0] || '';
+  const second = parts[1]?.[0] || '';
+  return (first + second).toUpperCase();
+};
+
 function Shop() {
   const navigate = useNavigate();
   
@@ -62,7 +69,62 @@ function Shop() {
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
   const navItems = ['About', 'Service', 'Discovery', 'Shop', 'Contact'];
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const jwt = localStorage.getItem('jwt');
+      const userData = localStorage.getItem('user');
+      
+      if (jwt && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setIsLoggedIn(true);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('jwt');
+          localStorage.removeItem('user');
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUser(null);
+    setShowProfileDropdown(false);
+    navigate('/');
+  };
+
+  const goToProfile = () => {
+    setShowProfileDropdown(false);
+    navigate('/profile');
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileDropdown]);
 
   useEffect(() => {
     const initializeSession = async () => {
@@ -94,7 +156,6 @@ function Shop() {
     initializeSession();
   }, []);
 
-  // ADD: Fetch cart count
   const fetchCartCount = async (sessionId) => {
     try {
       const response = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
@@ -290,68 +351,118 @@ function Shop() {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="pet-care-app">
-        <header className="header">
-          <div className="nav-container">
-            <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
-              <span className="navbar-logo-text">PawPicks</span>
-            </div>
-            <nav className="nav-menu">
-              {navItems.map(item => (
-                <a
-                  key={item}
-                  href="#"
-                  className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(item, e)}
-                >
-                  {item}
-                </a>
-              ))}
-            </nav>
-            <div className="nav-actions">
-              <button className="notification-btn" aria-label="Notifications" type="button">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
-                  <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
-                </svg>
-              </button>
-              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
-                </svg>
-                {cartCount > 0 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-8px',
-                    right: '-8px',
-                    background: '#dc2626',
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: '20px',
-                    height: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
-                  }}>
-                    {cartCount}
-                  </span>
+  const renderNavbar = () => (
+    <header className="header">
+      <div className="nav-container">
+        <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
+          <span className="navbar-logo-text">PawPicks</span>
+        </div>
+        <nav className="nav-menu">
+          {navItems.map(item => (
+            <a
+              key={item}
+              href="#"
+              className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
+              onClick={(e) => handleNavClick(item, e)}
+            >
+              {item}
+            </a>
+          ))}
+        </nav>
+        <div className="nav-actions">
+          <button className="notification-btn" aria-label="Notifications" type="button">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
+              <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
+            </svg>
+          </button>
+          <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
+            </svg>
+            {cartCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-8px',
+                right: '-8px',
+                background: '#dc2626',
+                color: 'white',
+                borderRadius: '50%',
+                width: '20px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.75rem',
+                fontWeight: 'bold'
+              }}>
+                {cartCount}
+              </span>
+            )}
+          </button>
+          
+          {isLoggedIn && user ? (
+            <div className="profile-dropdown-container">
+              <div 
+                className="nav-profile-avatar"
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                title={user.fullName}
+              >
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="Profile" />
+                ) : (
+                  getInitials(user.fullName)
                 )}
-              </button>
+              </div>
+              
+              <div className={`profile-dropdown ${showProfileDropdown ? 'show' : ''}`}>
+                <div className="dropdown-header">
+                  <p className="dropdown-user-name">{user.fullName}</p>
+                  <p className="dropdown-user-email">{user.email || user.phoneNumber}</p>
+                </div>
+                <ul className="dropdown-menu">
+                  <li>
+                    <button className="dropdown-item" onClick={goToProfile}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                      </svg>
+                      View Profile
+                    </button>
+                  </li>
+                  <li>
+                    <button className="dropdown-item logout" onClick={handleLogout}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16,17 21,12 16,7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <>
               <button type="button" className="auth-link" onClick={goToRegister} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                 Register /
               </button>
               <button type="button" className="auth-link" onClick={goToLogin} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
                 Login
               </button>
-            </div>
-          </div>
-        </header>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
 
+  if (loading) {
+    return (
+      <div className="pet-care-app">
+        {renderNavbar()}
         <main className="main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🐾</div>
@@ -365,65 +476,7 @@ function Shop() {
   if (error) {
     return (
       <div className="pet-care-app">
-        <header className="header">
-          <div className="nav-container">
-            <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
-              <span className="navbar-logo-text">PawPicks</span>
-            </div>
-            <nav className="nav-menu">
-              {navItems.map(item => (
-                <a
-                  key={item}
-                  href="#"
-                  className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
-                  onClick={(e) => handleNavClick(item, e)}
-                >
-                  {item}
-                </a>
-              ))}
-            </nav>
-            <div className="nav-actions">
-              <button className="notification-btn" aria-label="Notifications" type="button">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
-                  <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
-                </svg>
-              </button>
-              <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
-                </svg>
-                {cartCount > 0 && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-8px',
-                    right: '-8px',
-                    background: '#dc2626',
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: '20px',
-                    height: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold'
-                  }}>
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-              <button type="button" className="auth-link" onClick={goToRegister} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-                Register /
-              </button>
-              <button type="button" className="auth-link" onClick={goToLogin} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-                Login
-              </button>
-            </div>
-          </div>
-        </header>
-
+        {renderNavbar()}
         <main className="main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
@@ -454,64 +507,7 @@ function Shop() {
 
   return (
     <div className="pet-care-app">
-      <header className="header">
-        <div className="nav-container">
-          <div className="logo" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src={FooterLogoImg} alt="Logo" className="navbar-logo-img" />
-            <span className="navbar-logo-text">PawPicks</span>
-          </div>
-          <nav className="nav-menu">
-            {navItems.map(item => (
-              <a
-                key={item}
-                href="#"
-                className={`nav-link ${activeNavLink === item ? 'active' : ''}`}
-                onClick={(e) => handleNavClick(item, e)}
-              >
-                {item}
-              </a>
-            ))}
-          </nav>
-          <div className="nav-actions">
-            <button className="notification-btn" aria-label="Notifications" type="button">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M10 2C10.5523 2 11 2.44772 11 3V4.1C13.2822 4.56329 15 6.58104 15 9V12.382L16.553 14.894C16.8056 15.2485 16.5437 15.75 16.118 15.75H3.88197C3.45626 15.75 3.19440 15.2485 3.44701 14.894L5 12.382V9C5 6.58104 6.71776 4.56329 9 4.1V3C9 2.44772 9.44772 2 10 2Z" fill="#9CA3AF" />
-                <path d="M7.5 17.25C7.5 18.4926 8.50736 19.5 10 19.5C11.4926 19.5 12.5 18.4926 12.5 17.25H7.5Z" fill="#9CA3AF" />
-              </svg>
-            </button>
-            <button className="cart-btn" aria-label="Cart" type="button" onClick={() => navigate('/cart')} style={{ position: 'relative' }}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M3 3H4.27924C4.70967 3 5.09181 3.28101 5.21799 3.69139L5.5 4.5M5.5 4.5L6.5 8.5H15.5L17 4.5H5.5ZM8 16.5C8.82843 16.5 9.5 15.8284 9.5 15C9.5 14.1716 8.82843 13.5 8 13.5C7.17157 13.5 6.5 14.1716 6.5 15C6.5 15.8284 7.17157 16.5 8 16.5ZM15 16.5C15.8284 16.5 16.5 15.8284 16.5 15C16.5 14.1716 15.8284 13.5 15 13.5C14.1716 13.5 14.5 14.1716 14.5 15C14.5 15.8284 14.1716 16.5 15 16.5Z" stroke="#9CA3AF" strokeWidth="1.5" fill="none" />
-              </svg>
-              {cartCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-8px',
-                  right: '-8px',
-                  background: '#dc2626',
-                  color: 'white',
-                  borderRadius: '50%',
-                  width: '20px',
-                  height: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.75rem',
-                  fontWeight: 'bold'
-                }}>
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            <button type="button" className="auth-link" onClick={goToRegister} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-              Register /
-            </button>
-            <button type="button" className="auth-link" onClick={goToLogin} style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-              Login
-            </button>
-          </div>
-        </div>
-      </header>
+      {renderNavbar()}
 
       <main className="main">
         <section className="shop-poster-section">

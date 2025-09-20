@@ -3005,3 +3005,145 @@ input:focus {
 .font-bold {
   font-weight: 700;
 }
+
+
+.profile-dropdown-container {
+  position: relative;
+  z-index: 9999; 
+}
+
+.nav-profile-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ddd;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+  position: relative;
+  z-index: 10000;
+}
+
+.nav-profile-avatar:hover {
+  border-color: #8B5CF6;
+  transform: scale(1.05);
+}
+
+.nav-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.profile-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 8px 8px 0 0;
+}
+
+.dropdown-user-name {
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  font-size: 14px;
+}
+
+.dropdown-user-email {
+  color: #6b7280;
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+.dropdown-menu {
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #374151;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6;
+}
+
+.dropdown-item.logout {
+  color: #dc2626;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dropdown-item.logout:hover {
+  background-color: #fef2f2;
+}
+
+.header {
+  position: relative;
+  z-index: 1000;
+}
+
+.nav-container {
+  position: relative;
+  z-index: 1001;
+}
+
+.nav-actions {
+  position: relative;
+  z-index: 1002;
+}
+
+.hero-section {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-visual {
+  position: relative;
+  z-index: 2;
+}
+
+.pet-care-app {
+  position: relative;
+}

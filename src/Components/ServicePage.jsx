@@ -19,6 +19,14 @@ import img6 from "../Assets/6.png";
 
 import '../ServicePage.css';
 
+const getInitials = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/);
+  const first = parts[0]?.[0] || '';
+  const second = parts[1]?.[0] || '';
+  return (first + second).toUpperCase();
+};
+
+
 const serviceCards = [
   { title: "Physical checkup your pet", desc: "Regular physical checkups are essential for your pet’s health.", img: dogImg },
   { title: "Spa", desc: "Our pet spa offers a luxurious and relaxing experience for your furry friends.", img: doggoImg },
@@ -34,6 +42,8 @@ const offerCards = [
   { num: 6, title: "Security Program", desc: "Focused on protection and safety for your pet.", img: img6 },
 ];
 
+
+
 function ServicePage() {
   const [formData, setFormData] = useState({ fullName: "", phoneNumber: "", email: "" });
   const [activeNavLink, setActiveNavLink] = useState('Service');
@@ -46,6 +56,62 @@ function ServicePage() {
   // Add session and cart management
   const [cartCount, setCartCount] = useState(0);
   const [sessionId, setSessionId] = useState(null);
+
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+   const [user, setUser] = useState(null);
+   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
+    useEffect(() => {
+    const checkAuth = () => {
+      const jwt = localStorage.getItem('jwt');
+      const userData = localStorage.getItem('user');
+      
+      if (jwt && userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          setIsLoggedIn(true);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          localStorage.removeItem('jwt');
+          localStorage.removeItem('user');
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+    const handleLogout = () => {
+      localStorage.removeItem('jwt');
+      localStorage.removeItem('user');
+      setIsLoggedIn(false);
+      setUser(null);
+      setShowProfileDropdown(false);
+      navigate('/');
+    };
+  
+    const goToProfile = () => {
+      setShowProfileDropdown(false);
+      navigate('/profile');
+    };
+  
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (showProfileDropdown && !event.target.closest('.profile-dropdown-container')) {
+          setShowProfileDropdown(false);
+        }
+      };
+  
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showProfileDropdown]);
+
 
   useEffect(() => {
     const initializeSession = async () => {
@@ -216,22 +282,69 @@ function ServicePage() {
                 </span>
               )}
             </button>
-            <button
-              type="button"
-              className="auth-link"
-              onClick={() => navigate('/register')}
-              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
-            >
-              Register /
-            </button>
-            <button
-              type="button"
-              className="auth-link"
-              onClick={() => navigate('/login')}
-              style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
-            >
-              Login
-            </button>
+            {isLoggedIn && user ? (
+              <div className="profile-dropdown-container">
+                <div 
+                  className="nav-profile-avatar"
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                  title={user.fullName}
+                >
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt="Profile" />
+                  ) : (
+                    getInitials(user.fullName)
+                  )}
+                </div>
+                
+                <div className={`profile-dropdown ${showProfileDropdown ? 'show' : ''}`}>
+                  <div className="dropdown-header">
+                    <p className="dropdown-user-name">{user.fullName}</p>
+                    <p className="dropdown-user-email">{user.email || user.phoneNumber}</p>
+                  </div>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <button className="dropdown-item" onClick={goToProfile}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        View Profile
+                      </button>
+                    </li>
+                    <li>
+                      <button className="dropdown-item logout" onClick={handleLogout}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                          <polyline points="16,17 21,12 16,7"></polyline>
+                          <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="auth-link"
+                  onClick={() => navigate('/register')}
+                  style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+                >
+                  Register /
+                </button>
+                <button
+                  type="button"
+                  className="auth-link"
+                  onClick={() => navigate('/login')}
+                  style={{ background: 'none', border: 0, padding: 0, cursor: 'pointer' }}
+                >
+                  Login
+                </button>
+              </>
+            )}
+    
           </div>
         </div>
       </header>

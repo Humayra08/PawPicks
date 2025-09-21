@@ -10,7 +10,10 @@ import {
 
 const router = express.Router();
 
+// Session endpoints first so '/session' doesn't get caught by '/:sessionId'
 router.post('/session', generateSession);
+
+// Cart CRUD by sessionId
 router.get('/:sessionId', getCart);
 router.post('/add', addToCart);
 router.put('/update', updateCartItem);

@@ -1,14 +1,25 @@
+import { v4 as uuidv4 } from 'uuid';
 import Cart from '../models/cartModel.js';
-import Product from '../models/productsModel.js';
+import Product from '../models/productModel.js';
 
+// Generate a sessionId for guest users
 const generateSessionId = () => {
-  return 'guest_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+  return `guest_${uuidv4()}`;
 };
 
+const attachTotals = (cart) => {
+  const { totalItems, totalAmount } = cart.computeTotals();
+  const payload = cart.toObject();
+  payload.totalItems = totalItems;
+  payload.totalAmount = totalAmount;
+  return payload;
+};
+
+// Fetch cart by sessionId
 export const getCart = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    
+
     if (!sessionId) {
       return res.status(400).json({
         success: false,
@@ -17,7 +28,7 @@ export const getCart = async (req, res) => {
     }
 
     let cart = await Cart.findOne({ sessionId }).populate('items.product');
-    
+
     if (!cart) {
       cart = new Cart({ sessionId, items: [] });
       await cart.save();
@@ -25,7 +36,7 @@ export const getCart = async (req, res) => {
 
     res.json({
       success: true,
-      data: cart
+      data: attachTotals(cart)
     });
   } catch (error) {
     console.error('Error fetching cart:', error);
@@ -37,6 +48,7 @@ export const getCart = async (req, res) => {
   }
 };
 
+// Add item to the cart
 export const addToCart = async (req, res) => {
   try {
     const { sessionId, productId, quantity = 1, selectedColor = '', selectedVariant = '' } = req.body;
@@ -68,23 +80,25 @@ export const addToCart = async (req, res) => {
       cart = new Cart({ sessionId, items: [] });
     }
 
-    const existingItemIndex = cart.items.findIndex(item => 
-      item.product.toString() === productId && 
-      item.selectedColor === selectedColor && 
-      item.selectedVariant === selectedVariant
+    const existingItemIndex = cart.items.findIndex(
+      (item) =>
+        item.product.toString() === productId &&
+        item.selectedColor === selectedColor &&
+        item.selectedVariant === selectedVariant
     );
 
     if (existingItemIndex > -1) {
       const newQuantity = cart.items[existingItemIndex].quantity + quantity;
-      
+
       if (newQuantity > product.stock) {
         return res.status(400).json({
           success: false,
           message: 'Cannot add more items than available stock'
         });
       }
-      
+
       cart.items[existingItemIndex].quantity = newQuantity;
+      cart.items[existingItemIndex].price = product.price; // refresh price snapshot
     } else {
       cart.items.push({
         product: productId,
@@ -101,7 +115,7 @@ export const addToCart = async (req, res) => {
     res.json({
       success: true,
       message: 'Item added to cart successfully',
-      data: cart
+      data: attachTotals(cart)
     });
   } catch (error) {
     console.error('Error adding to cart:', error);
@@ -113,6 +127,7 @@ export const addToCart = async (req, res) => {
   }
 };
 
+// Update cart item
 export const updateCartItem = async (req, res) => {
   try {
     const { sessionId, productId, quantity, selectedColor = '', selectedVariant = '' } = req.body;
@@ -132,10 +147,11 @@ export const updateCartItem = async (req, res) => {
       });
     }
 
-    const itemIndex = cart.items.findIndex(item => 
-      item.product.toString() === productId && 
-      item.selectedColor === selectedColor && 
-      item.selectedVariant === selectedVariant
+    const itemIndex = cart.items.findIndex(
+      (item) =>
+        item.product.toString() === productId &&
+        item.selectedColor === selectedColor &&
+        item.selectedVariant === selectedVariant
     );
 
     if (itemIndex === -1) {
@@ -149,14 +165,18 @@ export const updateCartItem = async (req, res) => {
       cart.items.splice(itemIndex, 1);
     } else {
       const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+      }
       if (quantity > product.stock) {
         return res.status(400).json({
           success: false,
           message: 'Quantity exceeds available stock'
         });
       }
-      
+
       cart.items[itemIndex].quantity = quantity;
+      cart.items[itemIndex].price = product.price; // refresh price snapshot
     }
 
     await cart.save();
@@ -165,7 +185,7 @@ export const updateCartItem = async (req, res) => {
     res.json({
       success: true,
       message: 'Cart updated successfully',
-      data: cart
+      data: attachTotals(cart)
     });
   } catch (error) {
     console.error('Error updating cart:', error);
@@ -177,6 +197,7 @@ export const updateCartItem = async (req, res) => {
   }
 };
 
+// Remove item from cart
 export const removeFromCart = async (req, res) => {
   try {
     const { sessionId, productId, selectedColor = '', selectedVariant = '' } = req.body;
@@ -196,10 +217,13 @@ export const removeFromCart = async (req, res) => {
       });
     }
 
-    cart.items = cart.items.filter(item => 
-      !(item.product.toString() === productId && 
-        item.selectedColor === selectedColor && 
-        item.selectedVariant === selectedVariant)
+    cart.items = cart.items.filter(
+      (item) =>
+        !(
+          item.product.toString() === productId &&
+          item.selectedColor === selectedColor &&
+          item.selectedVariant === selectedVariant
+        )
     );
 
     await cart.save();
@@ -208,7 +232,7 @@ export const removeFromCart = async (req, res) => {
     res.json({
       success: true,
       message: 'Item removed from cart successfully',
-      data: cart
+      data: attachTotals(cart)
     });
   } catch (error) {
     console.error('Error removing from cart:', error);
@@ -220,6 +244,7 @@ export const removeFromCart = async (req, res) => {
   }
 };
 
+// Clear cart
 export const clearCart = async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -245,7 +270,7 @@ export const clearCart = async (req, res) => {
     res.json({
       success: true,
       message: 'Cart cleared successfully',
-      data: cart
+      data: attachTotals(cart)
     });
   } catch (error) {
     console.error('Error clearing cart:', error);
@@ -257,10 +282,11 @@ export const clearCart = async (req, res) => {
   }
 };
 
-export const generateSession = async (req, res) => {
+// Generate session
+export const generateSession = async (_req, res) => {
   try {
     const sessionId = generateSessionId();
-    
+
     res.json({
       success: true,
       data: { sessionId }

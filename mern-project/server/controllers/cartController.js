@@ -1,18 +1,29 @@
-import { v4 as uuidv4 } from 'uuid';
 import Cart from '../models/cartModel.js';
-import Product from '../models/productModel.js';
+import Product from '../models/productsModel.js';
 
 // Generate a sessionId for guest users
 const generateSessionId = () => {
-  return `guest_${uuidv4()}`;
+  return 'guest_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
 };
 
-const attachTotals = (cart) => {
-  const { totalItems, totalAmount } = cart.computeTotals();
-  const payload = cart.toObject();
-  payload.totalItems = totalItems;
-  payload.totalAmount = totalAmount;
-  return payload;
+// Compute totals from items without relying on schema instance methods
+const computeTotalsFromItems = (items = []) => {
+  const totalItems = items.reduce((sum, it) => sum + (Number(it?.quantity) || 0), 0);
+  const totalAmount = items.reduce(
+    (sum, it) => sum + (Number(it?.price) || 0) * (Number(it?.quantity) || 0),
+    0
+  );
+  return { totalItems, totalAmount };
+};
+
+// Convert Mongoose doc to plain object and attach totals
+const withTotals = (cartDoc) => {
+  const cart =
+    typeof cartDoc?.toObject === 'function' ? cartDoc.toObject() : JSON.parse(JSON.stringify(cartDoc || {}));
+  const { totalItems, totalAmount } = computeTotalsFromItems(cart.items || []);
+  cart.totalItems = totalItems;
+  cart.totalAmount = totalAmount;
+  return cart;
 };
 
 // Fetch cart by sessionId
@@ -27,6 +38,14 @@ export const getCart = async (req, res) => {
       });
     }
 
+    // Guard: if routes are misordered and "/session" hits here
+    if (sessionId === 'session') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid session ID. Did you mean to POST /api/cart/session?'
+      });
+    }
+
     let cart = await Cart.findOne({ sessionId }).populate('items.product');
 
     if (!cart) {
@@ -36,7 +55,7 @@ export const getCart = async (req, res) => {
 
     res.json({
       success: true,
-      data: attachTotals(cart)
+      data: withTotals(cart)
     });
   } catch (error) {
     console.error('Error fetching cart:', error);
@@ -80,15 +99,14 @@ export const addToCart = async (req, res) => {
       cart = new Cart({ sessionId, items: [] });
     }
 
-    const existingItemIndex = cart.items.findIndex(
-      (item) =>
-        item.product.toString() === productId &&
-        item.selectedColor === selectedColor &&
-        item.selectedVariant === selectedVariant
+    const existingItemIndex = cart.items.findIndex(item =>
+      item.product.toString() === productId &&
+      item.selectedColor === selectedColor &&
+      item.selectedVariant === selectedVariant
     );
 
     if (existingItemIndex > -1) {
-      const newQuantity = cart.items[existingItemIndex].quantity + quantity;
+      const newQuantity = (cart.items[existingItemIndex].quantity || 0) + quantity;
 
       if (newQuantity > product.stock) {
         return res.status(400).json({
@@ -98,7 +116,8 @@ export const addToCart = async (req, res) => {
       }
 
       cart.items[existingItemIndex].quantity = newQuantity;
-      cart.items[existingItemIndex].price = product.price; // refresh price snapshot
+      // ensure price snapshot is present/updated
+      cart.items[existingItemIndex].price = product.price;
     } else {
       cart.items.push({
         product: productId,
@@ -115,7 +134,7 @@ export const addToCart = async (req, res) => {
     res.json({
       success: true,
       message: 'Item added to cart successfully',
-      data: attachTotals(cart)
+      data: withTotals(cart)
     });
   } catch (error) {
     console.error('Error adding to cart:', error);
@@ -147,11 +166,10 @@ export const updateCartItem = async (req, res) => {
       });
     }
 
-    const itemIndex = cart.items.findIndex(
-      (item) =>
-        item.product.toString() === productId &&
-        item.selectedColor === selectedColor &&
-        item.selectedVariant === selectedVariant
+    const itemIndex = cart.items.findIndex(item =>
+      item.product.toString() === productId &&
+      item.selectedColor === selectedColor &&
+      item.selectedVariant === selectedVariant
     );
 
     if (itemIndex === -1) {
@@ -176,7 +194,8 @@ export const updateCartItem = async (req, res) => {
       }
 
       cart.items[itemIndex].quantity = quantity;
-      cart.items[itemIndex].price = product.price; // refresh price snapshot
+      // refresh price snapshot so totals are correct
+      cart.items[itemIndex].price = product.price;
     }
 
     await cart.save();
@@ -185,7 +204,7 @@ export const updateCartItem = async (req, res) => {
     res.json({
       success: true,
       message: 'Cart updated successfully',
-      data: attachTotals(cart)
+      data: withTotals(cart)
     });
   } catch (error) {
     console.error('Error updating cart:', error);
@@ -217,13 +236,12 @@ export const removeFromCart = async (req, res) => {
       });
     }
 
-    cart.items = cart.items.filter(
-      (item) =>
-        !(
-          item.product.toString() === productId &&
-          item.selectedColor === selectedColor &&
-          item.selectedVariant === selectedVariant
-        )
+    cart.items = cart.items.filter(item =>
+      !(
+        item.product.toString() === productId &&
+        item.selectedColor === selectedColor &&
+        item.selectedVariant === selectedVariant
+      )
     );
 
     await cart.save();
@@ -232,7 +250,7 @@ export const removeFromCart = async (req, res) => {
     res.json({
       success: true,
       message: 'Item removed from cart successfully',
-      data: attachTotals(cart)
+      data: withTotals(cart)
     });
   } catch (error) {
     console.error('Error removing from cart:', error);
@@ -270,7 +288,7 @@ export const clearCart = async (req, res) => {
     res.json({
       success: true,
       message: 'Cart cleared successfully',
-      data: attachTotals(cart)
+      data: withTotals(cart)
     });
   } catch (error) {
     console.error('Error clearing cart:', error);
@@ -286,7 +304,6 @@ export const clearCart = async (req, res) => {
 export const generateSession = async (_req, res) => {
   try {
     const sessionId = generateSessionId();
-
     res.json({
       success: true,
       data: { sessionId }

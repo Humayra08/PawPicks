@@ -1,32 +1,33 @@
-import mongoose from 'mongoose';
-
-const orderItemSchema = new mongoose.Schema(
-  {
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-    quantity: { type: Number, required: true, min: 1 },
-    price: { type: Number, required: true, min: 0 },
-    selectedColor: { type: String, default: '' },
-    selectedVariant: { type: String, default: '' }
-  },
-  { _id: false }
-);
+const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    sessionId: { type: String }, // optional
-    items: [orderItemSchema],
-    total: { type: Number, required: true, min: 0 },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    items: [
+      {
+        productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+        selectedColor: String,
+        selectedVariant: String,
+      },
+    ],
+    total: { type: Number, required: true },
     shippingAddress: {
       fullName: { type: String, required: true },
       email: { type: String, required: true },
       address: { type: String, required: true },
-      contactNumber: { type: String, required: true }
+      contactNumber: { type: String, required: true },
     },
-    paymentMethod: { type: String, required: true, enum: ['COD'] },
-    status: { type: String, default: 'pending', enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'] }
+    paymentMethod: { type: String, required: true },
+    status: { type: String, default: 'pending' },
+    createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-export default mongoose.model('Order', orderSchema);
+module.exports = mongoose.model('Order', orderSchema);

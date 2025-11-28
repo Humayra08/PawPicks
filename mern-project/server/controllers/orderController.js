@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Order from '../models/orderModel.js';
 import Cart from '../models/cartModel.js';
-import Product from '../models/productModel.js';
+import Product from '../models/productsModel.js';
 
 export const placeOrder = async (req, res) => {
   const session = await mongoose.startSession();

@@ -10,10 +10,9 @@ import {
 
 const router = express.Router();
 
-// Session endpoints first so '/session' doesn't get caught by '/:sessionId'
+// Register fixed route BEFORE dynamic param route
 router.post('/session', generateSession);
 
-// Cart CRUD by sessionId
 router.get('/:sessionId', getCart);
 router.post('/add', addToCart);
 router.put('/update', updateCartItem);
